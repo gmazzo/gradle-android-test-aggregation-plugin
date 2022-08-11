@@ -1,23 +1,8 @@
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        google()
-        mavenCentral()
-    }
-}
-
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
+apply(from = "gradle/shared.settings.gradle.kts")
 
 rootProject.name = "android-jacoco-aggregated-demo"
 
-include(":app")
-include(":domain")
-include(":login")
+include("app")
+include("domain")
+include("login")
+includeBuild("coverage-plugin")
