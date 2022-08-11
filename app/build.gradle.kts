@@ -36,6 +36,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.domain)
     implementation(projects.login)
 
     implementation(libs.androidx.core)

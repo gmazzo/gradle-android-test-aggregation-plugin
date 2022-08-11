@@ -19,4 +19,5 @@ dependencyResolutionManagement {
 rootProject.name = "android-jacoco-aggregated-demo"
 
 include(":app")
+include(":domain")
 include(":login")
