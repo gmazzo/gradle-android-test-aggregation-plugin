@@ -1,26 +1,27 @@
 plugins {
-    alias(libs.plugins.android)
+    alias(libs.plugins.android.lib)
     alias(libs.plugins.kotlin.android)
 }
 
 android {
-    namespace = "com.example.myapplication"
+    namespace = "com.example.login"
     compileSdk = 32
 
     defaultConfig {
-        applicationId = "com.example.myapplication"
         minSdk = 21
         targetSdk = 32
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
@@ -36,8 +37,6 @@ android {
 }
 
 dependencies {
-    implementation(projects.login)
-
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
     implementation(libs.google.material)
@@ -45,8 +44,6 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.livedata)
     implementation(libs.androidx.viewmodel)
-    implementation("androidx.navigation:navigation-fragment-ktx:2.5.0")
-    implementation("androidx.navigation:navigation-ui-ktx:2.5.0")
 
     testImplementation(libs.junit)
 

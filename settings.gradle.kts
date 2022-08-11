@@ -1,3 +1,5 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -14,6 +16,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Android Jacoco Aggregated Report demo"
+rootProject.name = "android-jacoco-aggregated-demo"
 
 include(":app")
+include(":login")
