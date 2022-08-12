@@ -4,11 +4,6 @@ plugins {
     `kotlin-dsl`
 }
 
-gradlePlugin.plugins.create("coverage") {
-    id = "coverage"
-    implementationClass = "CoveragePlugin"
-}
-
 dependencies {
     compileOnly(plugin(libs.plugins.android))
 }
