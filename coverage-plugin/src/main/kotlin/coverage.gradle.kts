@@ -42,7 +42,7 @@ allprojects {
             .getByName<AndroidComponentsExtension<*, *, *>>("androidComponents")
 
         // enables jacoco test coverage on `debug` build type by default
-        android.buildTypes["debug"].isTestCoverageEnabled = true
+        android.buildTypes["debug"].enableUnitTestCoverage = true
 
         // support for Robolectric tests
         android.testOptions.unitTests.all {
@@ -65,7 +65,7 @@ allprojects {
         androidComponents.onVariants { variant ->
             val buildType = android.buildTypes[variant.buildType!!]
 
-            if (variant.unitTest != null && buildType.isTestCoverageEnabled) {
+            if (variant.unitTest != null && buildType.enableUnitTestCoverage) {
                 afterEvaluate {
                     /**
                      * `aggregateTestCoverage` applies to `BuildType`s and `Flavor`s and
@@ -76,7 +76,7 @@ allprojects {
                      * The following logic is no honor the precedence order:
                      * - If any component of the variant (buildType/flavor) says `true`, then `true`
                      * - If any component of the variant says `false` (and other says nothing `null`), then `false`
-                     * - If no component says anything (`null`), then `true` (because its `BuildType` has `isTestCoverageEnabled = true`)
+                     * - If no component says anything (`null`), then `true` (because its `BuildType` has `enableUnitTestCoverage = true`)
                      */
                     val aggregateSources = sequenceOf(buildType.aggregateTestCoverage) +
                             variant.productFlavors.asSequence()
