@@ -46,9 +46,11 @@ allprojects {
 
         // support for Robolectric tests
         android.testOptions.unitTests.all {
-            it.configure<JacocoTaskExtension> {
-                isIncludeNoLocationClasses = true
-                excludes = listOf("jdk.internal.*")
+            plugins.withId("jacoco") {
+                it.configure<JacocoTaskExtension> {
+                    isIncludeNoLocationClasses = true
+                    excludes = listOf("jdk.internal.*")
+                }
             }
         }
 
