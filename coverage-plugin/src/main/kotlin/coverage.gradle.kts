@@ -44,6 +44,14 @@ allprojects {
         // enables jacoco test coverage on `debug` build type by default
         android.buildTypes["debug"].isTestCoverageEnabled = true
 
+        // support for Robolectric tests
+        android.testOptions.unitTests.all {
+            it.configure<JacocoTaskExtension> {
+                isIncludeNoLocationClasses = true
+                excludes = listOf("jdk.internal.*")
+            }
+        }
+
         android.buildTypes.configureEach {
             extensions.add(typeOf<Property<Boolean>>(), ::aggregateTestCoverage.name, objects.property())
         }
