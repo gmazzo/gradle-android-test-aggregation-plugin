@@ -44,3 +44,20 @@ This is an opt-in/out switch meant to be used when having `productFlavors`.
 have many coverage reports to produce targeting `debug` (one per flavor variant).
 You can use `enableUnitTestCoverage.set(false)` to turn aggregation off for an specific `ProductFlavor`. 
 Basically, the variant won't be added to the `codeCoverageExecutionData` configuration, so `:jacocoTestReport` won't compute it
+
+For instance, `app` module has a `environment` dimension with 2 flavors: `stage` and `prod`.
+Without any extra settings, `:jacocoTestReport` will depend on `:app:testStageDebugUnitTest` and 
+`:app:testProdDebugUnitTest` (running its `src/test/` tests effectively twice).
+You may choose which flavors participates in the aggregated report by doing:
+```kotlin
+    productFlavors {
+        create("stage") { 
+            dimension = "environment" 
+        }
+        create("prod") { 
+            dimension = "environment"
+            aggregateTestCoverage.set(false)
+        }
+    }
+```
+where it effectively only run `:app:testStageDebugUnitTest`

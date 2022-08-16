@@ -26,6 +26,18 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+
+    flavorDimensions += "environment"
+    productFlavors {
+        create("stage") {
+            dimension = "environment"
+        }
+        create("prod") {
+            dimension = "environment"
+            aggregateTestCoverage.set(false)
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
