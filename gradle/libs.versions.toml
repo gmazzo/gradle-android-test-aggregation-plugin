@@ -1,6 +1,6 @@
 [versions]
 kotlin = "1.7.0"
-agp = "7.3.0-beta05"
+agp = "7.2.1"
 androidx-lifecycle = "2.4.1"
 androidx-navigation = "2.5.0"
 
