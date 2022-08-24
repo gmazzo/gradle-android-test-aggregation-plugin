@@ -150,6 +150,7 @@ allprojects {
                 "**/Manifest.class",
                 "**/Manifest$*",
                 "**/BuildConfig.class",
+                "**/BR.class",
             )
         }
 
