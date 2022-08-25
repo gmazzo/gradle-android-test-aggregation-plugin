@@ -101,9 +101,9 @@ allprojects {
                 attribute(TestSuiteType.TEST_SUITE_TYPE_ATTRIBUTE, objects.named(TestSuiteType.UNIT_TEST))
                 attribute(VerificationType.VERIFICATION_TYPE_ATTRIBUTE, objects.named(VerificationType.JACOCO_RESULTS))
             }
-            jacocoVariants.all task@{
+            jacocoVariants.all variant@{
                 val execData = tasks
-                    .named("test${unitTest!!.name.capitalized()}")
+                    .named("test${this@variant.unitTest!!.name.capitalized()}")
                     .map { it.the<JacocoTaskExtension>().destinationFile!! }
 
                 outgoing.artifact(execData) {
@@ -121,8 +121,8 @@ allprojects {
                 attribute(TestSuiteType.TEST_SUITE_TYPE_ATTRIBUTE, objects.named(TestSuiteType.UNIT_TEST))
                 attribute(VerificationType.VERIFICATION_TYPE_ATTRIBUTE, objects.named(VerificationType.MAIN_SOURCES))
             }
-            jacocoVariants.all task@{
-                val variant = android.variants.single { it.name == name }
+            jacocoVariants.all variant@{
+                val variant = android.variants.single { it.name == this@variant.name }
                 val sources = objects.setProperty(File::class)
 
                 sources.addAll(variant.sourceSets.asSequence()
@@ -138,8 +138,8 @@ allprojects {
         // Jacoco does not supports multiple versions of the same class (when merging jar of different variants)
         // So we create a unified classes dir, doing the best effort keeping the first of each variant
         val allVariantsClassesForCoverageReport by tasks.registering(Sync::class) {
-            jacocoVariants.all task@{
-                from(artifacts.getAll(MultipleArtifact.ALL_CLASSES_DIRS))
+            jacocoVariants.all variant@{
+                from(this@variant.artifacts.getAll(MultipleArtifact.ALL_CLASSES_DIRS))
             }
             into(provider { temporaryDir })
             duplicatesStrategy = DuplicatesStrategy.WARN // in case of duplicated classes
