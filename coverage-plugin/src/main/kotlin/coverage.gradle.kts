@@ -10,19 +10,24 @@ import com.android.build.gradle.api.BaseVariant
 import org.gradle.configurationcache.extensions.capitalized
 import java.io.File
 
-val TYPE_ALL_VARIANTS_CLASSES = "all-variants-classes"
-
 check(project == rootProject) { "The coverage plugin can only be applied at root project" }
 
 apply(plugin = "base")
 apply(plugin = "jacoco-report-aggregation")
+
+val aggregatedVariantAttribute =
+    Attribute.of("com.android.variants.aggregated", Boolean::class.javaObjectType)
 
 val jacocoAggregation by configurations
 
 allprojects {
 
     plugins.withId("jacoco") {
-        jacocoAggregation.dependencies.add(rootProject.dependencies.create(project))
+        jacocoAggregation.dependencies.add(rootProject.dependencies.create(project).apply {
+            (this as ModuleDependency).attributes {
+                attribute(aggregatedVariantAttribute, true)
+            }
+        })
 
         plugins.withId("java") {
             tasks.named("jacocoTestReport").configure {
@@ -154,10 +159,10 @@ allprojects {
             isCanBeResolved = false
             isVisible = false
             attributes {
+                attribute(aggregatedVariantAttribute, true)
                 attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
                 attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
                 attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.CLASSES))
-                attribute(VerificationType.VERIFICATION_TYPE_ATTRIBUTE, objects.named(TYPE_ALL_VARIANTS_CLASSES))
             }
             outgoing.artifact(allVariantsClassesForCoverageReport) {
                 type = ArtifactTypeDefinition.JVM_CLASS_DIRECTORY
@@ -167,26 +172,8 @@ allprojects {
     }
 }
 
-val aggregatedClassDirectories =
-    configurations.findByName("aggregateCodeCoverageReportResults") ?:
-    configurations.getByName("allCodeCoverageReportClassDirectories")
-
-aggregatedClassDirectories.attributes {
-    attribute(VerificationType.VERIFICATION_TYPE_ATTRIBUTE, objects.named(TYPE_ALL_VARIANTS_CLASSES))
-}
-
 val report = the<ReportingExtension>().reports.create<JacocoCoverageReport>("jacocoTestReport") {
     testType.set(TestSuiteType.UNIT_TEST)
-
-    // we need replace `classDirectories` to make it compatible with Gradle 8, as withVariantReselection breaks it
-    reportTask {
-        classDirectories.setFrom(aggregatedClassDirectories.incoming.artifactView {
-            componentFilter { it is ProjectComponentIdentifier }
-            attributes {
-                attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.CLASSES))
-            }
-        }.files)
-    }
 }
 
 tasks.named("check").configure {
