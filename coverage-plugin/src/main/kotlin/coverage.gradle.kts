@@ -1,5 +1,6 @@
 import com.android.build.api.artifact.MultipleArtifact
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.UnitTest
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
@@ -14,24 +15,27 @@ check(project == rootProject) { "The coverage plugin can only be applied at root
 
 apply(plugin = "base")
 apply(plugin = "jacoco-report-aggregation")
+apply(plugin = "test-report-aggregation")
 
 val aggregatedVariantAttribute =
     Attribute.of("com.android.variants.aggregated", Boolean::class.javaObjectType)
 
 val jacocoAggregation by configurations
+val testReportAggregation by configurations
 
 allprojects {
 
     plugins.withId("jacoco") {
-        jacocoAggregation.dependencies.add(rootProject.dependencies.create(project).apply {
-            (this as ModuleDependency).attributes {
-                attribute(aggregatedVariantAttribute, true)
-            }
-        })
+        val childDependency = (rootProject.dependencies.create(project) as ModuleDependency).attributes {
+            attribute(aggregatedVariantAttribute, true)
+        }
+
+        jacocoAggregation.dependencies.add(childDependency)
+        testReportAggregation.dependencies.add(childDependency)
 
         plugins.withId("java") {
             tasks.named("jacocoTestReport").configure {
-                dependsOn("test")
+                dependsOn(JavaPlugin.TEST_TASK_NAME)
             }
         }
     }
@@ -61,13 +65,15 @@ allprojects {
             extensions.add(typeOf<Property<Boolean>>(), ::aggregateTestCoverage.name, objects.property())
         }
 
-        @Suppress("UNCHECKED_CAST")
+        val unitTestVariants = objects.namedDomainObjectSet(UnitTest::class)
         val jacocoVariants = objects.namedDomainObjectSet(Variant::class)
 
         androidComponents.onVariants { variant ->
             val buildType = android.buildTypes[variant.buildType!!]
 
             if (variant.unitTest != null && buildType.enableUnitTestCoverage) {
+                unitTestVariants.add(variant.unitTest!!)
+
                 afterEvaluate {
                     /**
                      * `aggregateTestCoverage` applies to `BuildType`s and `Flavor`s and
@@ -169,15 +175,37 @@ allprojects {
             }
         }
 
+        configurations.create("testResultsElements") {
+            isCanBeConsumed = true
+            isCanBeResolved = false
+            isVisible = false
+            attributes {
+                attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.VERIFICATION))
+                attribute(TestSuiteType.TEST_SUITE_TYPE_ATTRIBUTE, objects.named(TestSuiteType.UNIT_TEST))
+                attribute(VerificationType.VERIFICATION_TYPE_ATTRIBUTE, objects.named(VerificationType.TEST_RESULTS))
+            }
+            unitTestVariants.all {
+                outgoing.artifact(provider {
+                    tasks.named<Test>("test${name.capitalized()}")
+                        .flatMap { it.binaryResultsDirectory }
+                })
+            }
+        }
+
     }
 }
 
-val report = the<ReportingExtension>().reports.create<JacocoCoverageReport>("jacocoTestReport") {
-    testType.set(TestSuiteType.UNIT_TEST)
-}
+the<ReportingExtension>().reports {
+    val jacocoReport = create<JacocoCoverageReport>("jacocoTestReport") {
+        testType.set(TestSuiteType.UNIT_TEST)
+    }
+    val junitReport = create<AggregateTestReport>("testAggregateTestReport") {
+        testType.set(TestSuiteType.UNIT_TEST)
+    }
 
-tasks.named("check").configure {
-    dependsOn(report.reportTask)
+    tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME).configure {
+        dependsOn(jacocoReport.reportTask, junitReport.reportTask)
+    }
 }
 
 val BaseExtension.variants: DomainObjectSet<out BaseVariant>
