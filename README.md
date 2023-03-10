@@ -1,7 +1,8 @@
 # Demo project for aggregating Jacoco Android & JVM coverage reports
 This is an example project that illustrates how can the 
-[JaCoCo Report Aggregation Plugin](https://docs.gradle.org/current/userguide/jacoco_report_aggregation_plugin.html)
-can be used to aggregate a complex Android project with JVM modules in a single `:jacocoTestReport` task.
+[JaCoCo Report Aggregation Plugin](https://docs.gradle.org/current/userguide/jacoco_report_aggregation_plugin.html) and
+[Test Report Aggregation Plugin](https://docs.gradle.org/current/userguide/test_report_aggregation_plugin.html)
+can be used to aggregate a complex Android project with JVM modules in a single `:jacocoTestReport` and `:testAggregateTestReport` tasks.
 
 ## Project structure
 - An `app` android module (with Robolectric tests)
@@ -13,14 +14,14 @@ can be used to aggregate a complex Android project with JVM modules in a single 
 The plugin fills the gaps between [AGP](https://developer.android.com/studio/releases/gradle-plugin) and 
 [JaCoCo Report Aggregation Plugin](https://docs.gradle.org/current/userguide/jacoco_report_aggregation_plugin.html)
 by providing the necessary setup missing:
-- It applies `jacoco-report-aggregation` at root project
-- Creates a `JacocoCoverageReport` named `jacocoTestReport` for `TestSuiteType.UNIT_TEST`
-- If a module applies `jacoco` plugin, it adds it to the `jacocoAggregation` root configuration
+- It applies `jacoco-report-aggregation` and `test-report-aggregation` at root project
+- Creates `jacocoTestReport` and `testAggregateTestReport` for `TestSuiteType.UNIT_TEST`
+- If a module applies `jacoco` plugin, it adds it to the `jacocoAggregation` and `testReportAggregation` root configurations
 - If a module applies the `java` plugin, makes its child `jacocoTestReport` task to depend on `test`
 - If a module applies the `android` plugin:
   - it enables by default `BuildType.enableUnitTestCoverage` on `debug` to produce jacoco exec files
-  - adds the `codeCoverageExecutionData`, `codeCoverageSources` and `codeCoverageElements` (classes)
-    outgoing variants, to allow `jacoco-report-aggregation` to aggregate it
+  - adds the `codeCoverageExecutionData`, `codeCoverageSources`, `codeCoverageElements` (classes) and `testResultsElements`
+    outgoing variants, to allow `jacoco-report-aggregation` and `test-report-aggregation` to aggregate it
 
 Please note that JVM still need to manually apply `jacoco` plugin (this is an intentional opt-in behavior)
 [build.gradle.kts](build.gradle.kts#L3)
@@ -28,7 +29,10 @@ Please note that JVM still need to manually apply `jacoco` plugin (this is an in
 ## Producing an aggregated report for the whole project
 The task `:jacocoTestReport` is added to the root project when applying this plugin and it can be
 run to produce the report. All dependent `test` tasks will be run too to produce the required execution data.
-![Aggregated Report example](README-aggregated-report.png)
+![Aggregated JaCoCo Report example](README-aggregated-jacoco-report.png)
+
+The same for `:testAggregateTestReport`:
+![Aggregated Test Report example](README-aggregated-test-report.png)
 
 ## Use the `coverage` plugin on your own project
 The easiest way to adopt this plugin, is to put the [coverage.gradle.kts](coverage-plugin/src/main/kotlin/coverage.gradle.kts)
