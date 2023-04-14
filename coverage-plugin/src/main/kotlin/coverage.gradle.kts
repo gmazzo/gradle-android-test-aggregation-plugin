@@ -1,15 +1,11 @@
 import com.android.build.api.artifact.MultipleArtifact
+import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.ScopedArtifacts
 import com.android.build.api.variant.UnitTest
 import com.android.build.api.variant.Variant
-import com.android.build.gradle.AppExtension
-import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.TestExtension
 import com.android.build.gradle.TestedExtension
-import com.android.build.gradle.api.BaseVariant
 import org.gradle.configurationcache.extensions.capitalized
-import java.io.File
 
 check(project == rootProject) { "The coverage plugin can only be applied at root project" }
 
@@ -118,6 +114,14 @@ allprojects {
             }
         }
 
+        val allVariantsSourcesForCoverageReport by tasks.registering(Sync::class) {
+            destinationDir = temporaryDir
+            duplicatesStrategy = DuplicatesStrategy.WARN // in case of duplicated classes
+            jacocoVariants.all {
+                from(sources.java?.all, sources.kotlin?.all)
+            }
+        }
+
         configurations.create("codeCoverageSources") {
             isCanBeConsumed = true
             isCanBeResolved = false
@@ -127,26 +131,17 @@ allprojects {
                 attribute(TestSuiteType.TEST_SUITE_TYPE_ATTRIBUTE, objects.named(TestSuiteType.UNIT_TEST))
                 attribute(VerificationType.VERIFICATION_TYPE_ATTRIBUTE, objects.named(VerificationType.MAIN_SOURCES))
             }
-            jacocoVariants.all variant@{
-                val variant = android.variants.single { it.name == this@variant.name }
-                val sources = objects.setProperty(File::class)
-
-                sources.addAll(variant.sourceSets.asSequence()
-                    .flatMap { it.javaDirectories + it.kotlinDirectories }
-                    .asIterable())
-
-                outgoing.artifacts(sources) {
-                    type = ArtifactTypeDefinition.DIRECTORY_TYPE
-                }
+            outgoing.artifact(allVariantsSourcesForCoverageReport) {
+                type = ArtifactTypeDefinition.DIRECTORY_TYPE
             }
         }
 
         // Jacoco does not supports multiple versions of the same class (when merging jar of different variants)
         // So we create a unified classes dir, doing the best effort keeping the first of each variant
+        val allVariantsJars = objects.listProperty<RegularFile>()
+        val allVariantsDirs = objects.listProperty<Directory>()
         val allVariantsClassesForCoverageReport by tasks.registering(Sync::class) {
-            jacocoVariants.all variant@{
-                from(this@variant.artifacts.getAll(MultipleArtifact.ALL_CLASSES_DIRS))
-            }
+            from(allVariantsJars, allVariantsDirs)
             into(provider { temporaryDir })
             duplicatesStrategy = DuplicatesStrategy.WARN // in case of duplicated classes
             exclude(
@@ -158,6 +153,13 @@ allprojects {
                 "**/BuildConfig.class",
                 "**/BR.class",
             )
+        }
+
+        jacocoVariants.all task@{
+            artifacts
+                .forScope(ScopedArtifacts.Scope.PROJECT)
+                .use(allVariantsClassesForCoverageReport)
+                .toGet(ScopedArtifact.CLASSES, { allVariantsJars }, { allVariantsDirs })
         }
 
         configurations.create("codeCoverageElements") {
@@ -207,14 +209,6 @@ the<ReportingExtension>().reports {
         dependsOn(jacocoReport.reportTask, junitReport.reportTask)
     }
 }
-
-val BaseExtension.variants: DomainObjectSet<out BaseVariant>
-    get() = when (this) {
-        is AppExtension -> applicationVariants
-        is LibraryExtension -> libraryVariants
-        is TestExtension -> applicationVariants
-        else -> error("unsupported module type: $this")
-    }
 
 val Sequence<Property<Boolean>>.shouldAggregate
     get() = mapNotNull { it.orNull }
