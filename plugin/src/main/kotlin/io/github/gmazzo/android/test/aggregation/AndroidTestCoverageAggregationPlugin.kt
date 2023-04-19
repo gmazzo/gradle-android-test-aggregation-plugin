@@ -129,7 +129,7 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
 
         val allVariantsSourcesForCoverageReport by tasks.registering(Sync::class) {
             destinationDir = temporaryDir
-            duplicatesStrategy = DuplicatesStrategy.WARN // in case of duplicated classes
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE // in case of duplicated classes
             jacocoVariants.all {
                 from(sources.java?.all, sources.kotlin?.all)
             }
@@ -162,7 +162,7 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
         val allVariantsClassesForCoverageReport by tasks.registering(Sync::class) {
             from(allVariantsDirs)
             into(provider { temporaryDir })
-            duplicatesStrategy = DuplicatesStrategy.WARN // in case of duplicated classes
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE // in case of duplicated classes
             exclude(
                 // same exclude logic than https://android.googlesource.com/platform/tools/base/+/studio-master-dev/build-system/gradle-core/src/main/java/com/android/build/gradle/internal/coverage/JacocoReportTask.java#377
                 "**/R.class",
