@@ -1,4 +1,5 @@
-import com.android.build.api.artifact.MultipleArtifact
+package io.github.gmazzo.android.test.aggregation
+
 import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.ScopedArtifacts
@@ -6,6 +7,15 @@ import com.android.build.api.variant.UnitTest
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.TestedExtension
 import org.gradle.configurationcache.extensions.capitalized
+import org.gradle.kotlin.dsl.aggregateTestCoverage
+import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.getByName
+import org.gradle.kotlin.dsl.listProperty
+import org.gradle.kotlin.dsl.named
+import org.gradle.kotlin.dsl.namedDomainObjectSet
+import org.gradle.kotlin.dsl.property
+import org.gradle.kotlin.dsl.registering
+import org.gradle.kotlin.dsl.the
 
 check(project == rootProject) { "The coverage plugin can only be applied at root project" }
 
