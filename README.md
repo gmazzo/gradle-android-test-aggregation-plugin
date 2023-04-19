@@ -5,12 +5,13 @@ This is an example project that illustrates how can the
 can be used to aggregate a complex Android project with JVM modules in a single `:jacocoTestReport` and `:testAggregateTestReport` tasks.
 
 ## Project structure
-- An `app` android module (with Robolectric tests)
-- A `login` android library module (with JUnit4/JVM tests)
-- A `domain` jvm module (with tests)
-- A `coverage-plugin` included build that provides the `coverage` root plugin
+- A `plugin` included build that provides the `coverage` root plugin
+- A `demo-project` with:
+  - An `app` android module (with Robolectric tests)
+  - A `login` android library module (with JUnit4/JVM tests)
+  - A `domain` jvm module (with tests)
 
-## The `coverage` root plugin
+## The `test-aggregation` root plugin
 The plugin fills the gaps between [AGP](https://developer.android.com/studio/releases/gradle-plugin) and 
 [JaCoCo Report Aggregation Plugin](https://docs.gradle.org/current/userguide/jacoco_report_aggregation_plugin.html)
 by providing the necessary setup missing:
