@@ -1,3 +1,30 @@
+[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/io.github.gmazzo.test.aggregation.coverage)](https://plugins.gradle.org/plugin/io.github.gmazzo.test.aggregation.coverage)
+![Build Status](https://github.com/gmazzo/gradle-android-test-aggregation-plugin/actions/workflows/build.yaml/badge.svg)
+[![Coverage](https://codecov.io/gh/gmazzo/gradle-android-test-aggregation-plugin/branch/main/graph/badge.svg?token=D5cDiPWvcS)](https://codecov.io/gh/gmazzo/gradle-android-test-aggregation-plugin)
+
+# gradle-android-test-aggregation-plugin
+A couple Gradle plugins to make Android modules to work with 
+[JaCoCo Report Aggregation Plugin](https://docs.gradle.org/current/userguide/jacoco_report_aggregation_plugin.html) and
+[Test Report Aggregation Plugin](https://docs.gradle.org/current/userguide/test_report_aggregation_plugin.html)
+
+# Usage
+Apply the plugin at the **root** project and/or at **any child** project that uses it:
+```kotlin
+plugins {
+    id("io.github.gmazzo.test.aggregation.coverage") version "<latest>" 
+    // and/or
+    id("io.github.gmazzo.test.aggregation.results") version "<latest>"
+}
+```
+
+The `jacocoTestReport` (for `coverage`) and `testAggregateTestReport` (for `results`) will be created 
+to aggregate test results from all projects in the build
+
+The following is the old README.me of the demo project of my [Medium article](https://medium.com/p/53e912b2e63c) about this topic, 
+now promoted to dedicated Gradle plugins: 
+[io.github.gmazzo.test.aggregation.coverage](https://plugins.gradle.org/plugin/io.github.gmazzo.test.aggregation.coverage) and
+[io.github.gmazzo.test.aggregation.results](https://plugins.gradle.org/plugin/io.github.gmazzo.test.aggregation.results)
+
 # Demo project for aggregating Jacoco Android & JVM coverage reports
 This is an example project that illustrates how can the 
 [JaCoCo Report Aggregation Plugin](https://docs.gradle.org/current/userguide/jacoco_report_aggregation_plugin.html) and
