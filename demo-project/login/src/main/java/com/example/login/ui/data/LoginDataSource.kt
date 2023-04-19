@@ -2,7 +2,7 @@ package com.example.login.ui.data
 
 import com.example.login.ui.data.model.LoggedInUser
 import java.io.IOException
-import java.util.*
+import java.util.UUID
 
 /**
  * Class that handles authentication w/ login credentials and retrieves user information.

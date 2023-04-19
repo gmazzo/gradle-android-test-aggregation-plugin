@@ -56,8 +56,8 @@ android {
 }
 
 dependencies {
-    implementation(projects.domain)
-    implementation(projects.login)
+    implementation(projects.demoProject.domain)
+    implementation(projects.demoProject.login)
 
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
