@@ -12,12 +12,20 @@ gradlePlugin {
     website.set("https://github.com/gmazzo/gradle-android-test-aggregation-plugin")
     vcsUrl.set("https://github.com/gmazzo/gradle-android-test-aggregation-plugin")
 
-    plugins.create("test-aggregation") {
-        id = "io.github.gmazzo.test-aggregation"
+    plugins.create("test-coverage-aggregation") {
+        id = "io.github.gmazzo.test.aggregation.coverage"
         displayName = name
-        implementationClass = "io.github.gmazzo.android.test.aggregation.TestAggregationPlugin"
-        description = "Jacoco and Test results aggregation support for Android modules"
-        tags.addAll("android", "agp", "coverage", "jacoco", "test", "aggregation", "jacoco-report-aggregation", "test-report-aggregation")
+        implementationClass = "io.github.gmazzo.android.test.aggregation.TestCoverageAggregationPlugin"
+        description = "Jacoco coverage aggregation support for Android/JVM modules"
+        tags.addAll("android", "agp", "coverage", "jacoco", "test", "aggregation", "jacoco-report-aggregation")
+    }
+
+    plugins.create("test-results-aggregation") {
+        id = "io.github.gmazzo.test.aggregation.results"
+        displayName = name
+        implementationClass = "io.github.gmazzo.android.test.aggregation.TestResultsAggregationPlugin"
+        description = "Test results aggregation support for Android/JVM modules"
+        tags.addAll("android", "agp", "test", "aggregation", "test-report-aggregation")
     }
 }
 
