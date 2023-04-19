@@ -34,7 +34,7 @@ android {
         }
         create("prod") {
             dimension = "environment"
-            aggregateTestCoverage.set(false)
+            //aggregateTestCoverage.set(false)
         }
     }
 
