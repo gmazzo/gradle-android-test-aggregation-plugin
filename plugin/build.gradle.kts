@@ -55,3 +55,7 @@ dependencies {
     compileOnly(gradleKotlinDsl())
     compileOnly(plugin(libs.plugins.android))
 }
+
+tasks.publish {
+    dependsOn(tasks.publishPlugins)
+}
