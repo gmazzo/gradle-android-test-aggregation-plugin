@@ -1,8 +1,8 @@
 apply(from = "gradle/shared.settings.gradle.kts")
 
-rootProject.name = "android-jacoco-aggregated-demo"
+rootProject.name = "gradle-android-test-aggregation-plugin"
 
+includeBuild("plugin")
 include("app")
 include("domain")
 include("login")
-includeBuild("coverage-plugin")
