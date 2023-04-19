@@ -1,3 +1,4 @@
+![GitHub](https://img.shields.io/github/license/gmazzo/gradle-android-test-aggregation-plugin)
 [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/io.github.gmazzo.test.aggregation.coverage)](https://plugins.gradle.org/plugin/io.github.gmazzo.test.aggregation.coverage)
 ![Build Status](https://github.com/gmazzo/gradle-android-test-aggregation-plugin/actions/workflows/build.yaml/badge.svg)
 [![Coverage](https://codecov.io/gh/gmazzo/gradle-android-test-aggregation-plugin/branch/main/graph/badge.svg?token=D5cDiPWvcS)](https://codecov.io/gh/gmazzo/gradle-android-test-aggregation-plugin)
