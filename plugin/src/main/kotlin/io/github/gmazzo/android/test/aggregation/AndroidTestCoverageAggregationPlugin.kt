@@ -4,10 +4,10 @@ import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.variant.ScopedArtifacts
 import com.android.build.api.variant.UnitTest
 import com.android.build.api.variant.Variant
+import io.github.gmazzo.android.test.aggregation.UsageTestAggregationCompatibilityRule.Companion.USAGE_TEST_AGGREGATION
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.type.ArtifactTypeDefinition
-import org.gradle.api.attributes.Attribute
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.LibraryElements
 import org.gradle.api.attributes.TestSuiteType
@@ -38,13 +38,6 @@ import kotlin.sequences.map
 import kotlin.sequences.plus
 
 abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
-
-    companion object {
-
-        val AGGREGATED_TEST_COVERAGE_ATTRIBUTE: Attribute<Boolean> =
-            Attribute.of("com.android.test.coverage.aggregated", Boolean::class.javaObjectType)
-
-    }
 
     override fun apply(target: Project): Unit = with(target) {
         apply(plugin = "com.android.base")
@@ -181,14 +174,17 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
                 .toGet(ScopedArtifact.CLASSES, { allVariantsJars }, { allVariantsDirs })
         }
 
+        dependencies.attributesSchema.attribute(Usage.USAGE_ATTRIBUTE)
+            .compatibilityRules
+            .add(UsageTestAggregationCompatibilityRule::class.java)
+
         configurations.create("codeCoverageElements") {
             isCanBeConsumed = true
             isCanBeResolved = false
             isVisible = false
             attributes {
-                attribute(AGGREGATED_TEST_COVERAGE_ATTRIBUTE, true)
                 attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
-                attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+                attribute(Usage.USAGE_ATTRIBUTE, objects.named(USAGE_TEST_AGGREGATION))
                 attribute(
                     LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE,
                     objects.named(LibraryElements.CLASSES)
