@@ -10,6 +10,8 @@ plugins {
 group = "io.github.gmazzo.test.aggregation"
 description = "Test Aggregation Plugin for Android"
 
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
+
 gitVersioning.apply {
     refs {
         branch(".+") {
