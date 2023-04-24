@@ -63,13 +63,6 @@ run to produce the report. All dependent `test` tasks will be run too to produce
 The same for `:testAggregateTestReport`:
 ![Aggregated Test Report example](README-aggregated-test-report.png)
 
-## Use the `coverage` plugin on your own project
-The easiest way to adopt this plugin, is to put the [coverage.gradle.kts](coverage-plugin/src/main/kotlin/coverage.gradle.kts)
-on your `buildSrc/src/main/kotlin` folder.
-Create the `buildSrc` project if missing and make sure to apply `kotlin-dsl` plugin on it
-
-Don't forget its companion [CoveragePluginDSL.kt](coverage-plugin/src/main/kotlin/org/gradle/kotlin/dsl/CoveragePluginDSL.kt) file
-
 ## The `aggregateTestCoverage` DSL extension
 This is an opt-in/out switch meant to be used when having `productFlavors`.
 
