@@ -29,7 +29,7 @@ class TestResultsAggregationPlugin : Plugin<Project> {
         allprojects {
 
             plugins.withId("jvm-test-suite") {
-                testReportAggregation.dependencies.add(dependencies.testAggregation(project))
+                //testReportAggregation.dependencies.add(dependencies.testAggregation(project))
             }
 
             plugins.withId("com.android.base") {

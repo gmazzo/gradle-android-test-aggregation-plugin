@@ -27,8 +27,10 @@ class TestCoverageAggregationPlugin : Plugin<Project> {
         val jacocoAggregation by configurations
 
         allprojects {
-            plugins.withId("jacoco") {
-                jacocoAggregation.dependencies.add(dependencies.testAggregation(project))
+            plugins.withId("java") {
+                plugins.withId("jacoco") {
+                    jacocoAggregation.dependencies.add(dependencies.testAggregation(project))
+                }
             }
 
             plugins.withId("com.android.base") {

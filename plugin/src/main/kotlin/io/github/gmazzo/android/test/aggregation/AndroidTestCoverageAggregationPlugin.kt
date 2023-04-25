@@ -4,7 +4,6 @@ import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.variant.ScopedArtifacts
 import com.android.build.api.variant.UnitTest
 import com.android.build.api.variant.Variant
-import io.github.gmazzo.android.test.aggregation.UsageTestAggregationCompatibilityRule.Companion.USAGE_TEST_AGGREGATION
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.type.ArtifactTypeDefinition
@@ -20,6 +19,7 @@ import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Sync
 import org.gradle.configurationcache.extensions.capitalized
+import org.gradle.kotlin.dsl.USAGE_TEST_AGGREGATION
 import org.gradle.kotlin.dsl.aggregateTestCoverage
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
