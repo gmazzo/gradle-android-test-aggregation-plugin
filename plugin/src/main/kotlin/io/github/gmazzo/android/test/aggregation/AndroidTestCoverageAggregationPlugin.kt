@@ -174,10 +174,6 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
                 .toGet(ScopedArtifact.CLASSES, { allVariantsJars }, { allVariantsDirs })
         }
 
-        dependencies.attributesSchema.attribute(Usage.USAGE_ATTRIBUTE)
-            .compatibilityRules
-            .add(UsageTestAggregationCompatibilityRule::class.java)
-
         configurations.create("codeCoverageElements") {
             isCanBeConsumed = true
             isCanBeResolved = false
