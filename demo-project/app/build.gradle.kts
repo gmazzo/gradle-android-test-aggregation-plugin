@@ -6,6 +6,7 @@ plugins {
 android {
     namespace = "com.example.myapplication"
     compileSdk = 32
+    buildFeatures.viewBinding = true
 
     defaultConfig {
         applicationId = "com.example.myapplication"
@@ -39,15 +40,10 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility(java.sourceCompatibility)
+        targetCompatibility(java.targetCompatibility)
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-    buildFeatures {
-        viewBinding = true
-    }
+
     testOptions {
         unitTests {
             isIncludeAndroidResources = true

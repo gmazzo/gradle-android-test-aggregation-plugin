@@ -6,6 +6,7 @@ plugins {
 android {
     namespace = "com.example.login"
     compileSdk = 32
+    buildFeatures.viewBinding = true
 
     defaultConfig {
         minSdk = 21
@@ -27,15 +28,10 @@ android {
             )
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-    buildFeatures {
-        viewBinding = true
+        sourceCompatibility(java.sourceCompatibility)
+        targetCompatibility(java.targetCompatibility)
     }
 }
 
