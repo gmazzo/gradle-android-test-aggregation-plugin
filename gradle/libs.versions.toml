@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.7.0"
+kotlin = "1.8.20"
 agp = "8.0.0"
 androidx-lifecycle = "2.4.1"
 androidx-navigation = "2.5.0"
