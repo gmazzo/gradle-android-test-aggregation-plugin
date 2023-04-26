@@ -35,7 +35,7 @@ You control which projects are effectively included by using the DSL:
 testAggregation {
   modules {
     include(project(":app"))
-    exclude(projects.lib)
+    exclude(projects.lib) // typesafe accessors are also supported!
   }
 }
 ```
