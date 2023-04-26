@@ -26,6 +26,32 @@ now promoted to dedicated Gradle plugins:
 [io.github.gmazzo.test.aggregation.coverage](https://plugins.gradle.org/plugin/io.github.gmazzo.test.aggregation.coverage) and
 [io.github.gmazzo.test.aggregation.results](https://plugins.gradle.org/plugin/io.github.gmazzo.test.aggregation.results)
 
+## Filtering content
+The plugins will automatically aggregate `android` modules and `java` modules that also apply `jacoco` plugin on the
+`jacocoAggregation` and the `testReportAggregation` configurations.
+
+You control which projects are effectively included by using the DSL:
+```kotlin
+testAggregation {
+  modules {
+    include(project(":app"))
+    exclude(projects.lib)
+  }
+}
+```
+
+## Filtering coverage classes
+You can use the DSL to include/exclude `.class` **files** from the aggregated JaCoCo coverage report:
+```kotlin
+testAggregation {
+    coverage {
+        include("com/**/Login*") // will only include classes starting with `com.` containing `Login` on its name
+    }
+}
+```
+It's important to realize the filtering is done at `.class` file level (compiled classes). 
+You should not use classes names here but GLOB patterns.
+
 # Demo project for aggregating Jacoco Android & JVM coverage reports
 This is an example project that illustrates how can the 
 [JaCoCo Report Aggregation Plugin](https://docs.gradle.org/current/userguide/jacoco_report_aggregation_plugin.html) and

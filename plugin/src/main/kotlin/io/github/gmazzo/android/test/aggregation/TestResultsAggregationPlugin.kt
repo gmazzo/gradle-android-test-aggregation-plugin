@@ -9,7 +9,6 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.provideDelegate
-import org.gradle.kotlin.dsl.testAggregation
 import org.gradle.kotlin.dsl.the
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 
@@ -18,6 +17,8 @@ class TestResultsAggregationPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = with(target) {
         apply(plugin = "reporting-base")
         apply(plugin = "test-report-aggregation")
+
+        val extension = testAggregationExtension
 
         val testResultsReport =
             the<ReportingExtension>().reports.create<AggregateTestReport>("testAggregateTestReport") {
@@ -29,13 +30,13 @@ class TestResultsAggregationPlugin : Plugin<Project> {
         allprojects {
 
             plugins.withId("jvm-test-suite") {
-                testReportAggregation.dependencies.add(dependencies.testAggregation(project))
+                extension.aggregateProject(project, testReportAggregation)
             }
 
             plugins.withId("com.android.base") {
                 apply<AndroidTestResultsAggregationPlugin>()
 
-                testReportAggregation.dependencies.add(dependencies.testAggregation(project))
+                extension.aggregateProject(project, testReportAggregation)
             }
         }
 
