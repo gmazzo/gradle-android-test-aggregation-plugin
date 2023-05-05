@@ -1,8 +1,9 @@
+@file:Suppress("UnstableApiUsage")
+
 package io.github.gmazzo.android.test.aggregation
 
 import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.variant.ScopedArtifacts
-import com.android.build.api.variant.UnitTest
 import com.android.build.api.variant.Variant
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -34,8 +35,6 @@ import org.gradle.kotlin.dsl.registering
 import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.typeOf
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
-import kotlin.sequences.map
-import kotlin.sequences.plus
 
 abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
 
@@ -61,15 +60,12 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             )
         }
 
-        val unitTestVariants = objects.namedDomainObjectSet(UnitTest::class)
         val jacocoVariants = objects.namedDomainObjectSet(Variant::class)
 
         androidComponents.onVariants { variant ->
             val buildType = android.buildTypes[variant.buildType!!]
 
             if (variant.unitTest != null && buildType.enableUnitTestCoverage) {
-                unitTestVariants.add(variant.unitTest!!)
-
                 afterEvaluate {
                     /**
                      * `aggregateTestCoverage` applies to `BuildType`s and `Flavor`s and
