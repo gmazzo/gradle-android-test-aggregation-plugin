@@ -9,7 +9,7 @@ plugins {
 group = "io.github.gmazzo.test.aggregation"
 description = "Test Aggregation Plugin for Android"
 version = providers
-    .exec { commandLine("git", "describe", "--tags") }
+    .exec { commandLine("git", "describe", "--tags", "--always") }
     .standardOutput.asText.get().trim().removePrefix("v")
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
