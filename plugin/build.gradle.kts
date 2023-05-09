@@ -4,25 +4,15 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.samReceiver)
     alias(libs.plugins.gradle.pluginPublish)
-    alias(libs.plugins.gitVersioning)
 }
 
 group = "io.github.gmazzo.test.aggregation"
 description = "Test Aggregation Plugin for Android"
+version = providers
+    .exec { commandLine("git", "describe", "--tags") }
+    .standardOutput.asText.get().trim().removePrefix("v")
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
-
-gitVersioning.apply {
-    refs {
-        branch(".+") {
-            describeTagPattern = "v(?<version>.*)"
-            version = "\${describe.tag.version}-SNAPSHOT"
-        }
-        tag("v(?<version>.*)") {
-            version = "\${ref.version}"
-        }
-    }
-}
 
 gradlePlugin {
     website.set("https://github.com/gmazzo/gradle-android-test-aggregation-plugin")
