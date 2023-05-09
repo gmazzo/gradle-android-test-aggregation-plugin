@@ -5,12 +5,11 @@ plugins {
 
 android {
     namespace = "com.example.login"
-    compileSdk = 32
+    compileSdk = 33
     buildFeatures.viewBinding = true
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 32
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
