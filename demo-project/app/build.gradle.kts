@@ -5,13 +5,12 @@ plugins {
 
 android {
     namespace = "com.example.myapplication"
-    compileSdk = 32
+    compileSdk = 33
     buildFeatures.viewBinding = true
 
     defaultConfig {
         applicationId = "com.example.myapplication"
         minSdk = 21
-        targetSdk = 32
         versionCode = 1
         versionName = "1.0"
 
