@@ -1,5 +1,6 @@
 package io.github.gmazzo.android.test.aggregation
 
+import com.android.build.gradle.TestedExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.attributes.Category
@@ -30,7 +31,7 @@ abstract class AndroidTestResultsAggregationPlugin : Plugin<Project> {
                     objects.named(VerificationType.TEST_RESULTS)
                 )
             }
-            android.unitTestVariants.all {
+            (android as? TestedExtension)?.unitTestVariants?.all {
                 val testTask = tasks.named<Test>("test${name.capitalized()}")
 
                 outgoing.artifact(testTask.flatMap { it.binaryResultsDirectory })

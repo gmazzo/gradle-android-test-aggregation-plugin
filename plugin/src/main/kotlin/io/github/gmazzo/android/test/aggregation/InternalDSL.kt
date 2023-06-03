@@ -1,7 +1,7 @@
 package io.github.gmazzo.android.test.aggregation
 
 import com.android.build.api.variant.AndroidComponentsExtension
-import com.android.build.gradle.TestedExtension
+import com.android.build.gradle.BaseExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.kotlin.dsl.create
@@ -11,7 +11,7 @@ import org.gradle.kotlin.dsl.testAggregation
 import org.gradle.kotlin.dsl.the
 
 internal val Project.android
-    get() = the<TestedExtension>()
+    get() = the<BaseExtension>()
 
 internal val Project.androidComponents
     get() = extensions.getByName<AndroidComponentsExtension<*, *, *>>("androidComponents")
