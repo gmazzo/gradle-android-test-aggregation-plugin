@@ -10,6 +10,8 @@ android {
     targetProjectPath = projects.demoProject.app.dependencyProject.path
 
     defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
         missingDimensionStrategy("environment", "stage")
     }
 }
