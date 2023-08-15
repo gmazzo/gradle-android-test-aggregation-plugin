@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.login"
-    compileSdk = 33
+    compileSdk = libs.versions.android.sdk.get().toInt()
     buildFeatures.viewBinding = true
 
     defaultConfig {
