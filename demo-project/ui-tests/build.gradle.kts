@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.app.test"
-    compileSdk = 33
+    compileSdk = libs.versions.android.sdk.get().toInt()
 
     targetProjectPath = projects.demoProject.app.dependencyProject.path
 
