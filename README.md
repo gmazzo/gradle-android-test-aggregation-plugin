@@ -9,7 +9,7 @@ A couple Gradle plugins to make Android modules to work with
 [Test Report Aggregation Plugin](https://docs.gradle.org/current/userguide/test_report_aggregation_plugin.html)
 
 # Usage
-Apply the plugin at the **root** project and/or at **any child** project that uses it:
+Apply the plugin at the **root** project:
 ```kotlin
 plugins {
     id("io.github.gmazzo.test.aggregation.coverage") version "<latest>" 
@@ -17,6 +17,9 @@ plugins {
     id("io.github.gmazzo.test.aggregation.results") version "<latest>"
 }
 ```
+> !NOTE
+> This plugin can not be applied along with the `java` one because it conflicts. 
+> If you have a Java root project, it's recommended to move it to a dedicated module
 
 The `jacocoTestReport` (for `coverage`) and `testAggregateTestReport` (for `results`) will be created 
 to aggregate test results from all projects in the build

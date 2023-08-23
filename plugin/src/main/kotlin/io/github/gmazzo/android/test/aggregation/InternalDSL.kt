@@ -23,6 +23,10 @@ internal val Project.testAggregationExtension: TestAggregationExtension
             modules.excludes.finalizeValueOnRead()
         }
 
+internal fun Project.ensureItsNotJava() = plugins.withId("java-base") {
+    error("This plugin can not work with `java` plugin as well. It's recommended to apply it at the root project with at most the `base` plugin")
+}
+
 internal fun TestAggregationExtension.aggregateProject(project: Project, config: Configuration) =
     modules.includes(project) &&
             config.dependencies.add(project.dependencies.testAggregation(project))
