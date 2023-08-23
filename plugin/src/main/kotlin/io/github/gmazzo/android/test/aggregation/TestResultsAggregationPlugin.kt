@@ -23,7 +23,7 @@ class TestResultsAggregationPlugin : Plugin<Project> {
         val extension = testAggregationExtension
 
         val testResultsReport =
-            the<ReportingExtension>().reports.create<AggregateTestReport>("testAggregateTestReport") {
+            the<ReportingExtension>().reports.create<AggregateTestReport>("testAggregatedReport") {
                 testType.set(TestSuiteType.UNIT_TEST)
             }
 
