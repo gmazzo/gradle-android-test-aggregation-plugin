@@ -18,6 +18,8 @@ import org.gradle.testing.jacoco.plugins.JacocoCoverageReport
 class TestCoverageAggregationPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {
+        ensureItsNotJava()
+
         apply(plugin = "reporting-base")
         apply(plugin = "jacoco-report-aggregation")
 

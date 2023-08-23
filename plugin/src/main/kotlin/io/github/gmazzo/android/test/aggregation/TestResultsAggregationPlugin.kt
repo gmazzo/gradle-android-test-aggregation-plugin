@@ -15,6 +15,8 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
 class TestResultsAggregationPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {
+        ensureItsNotJava()
+
         apply(plugin = "reporting-base")
         apply(plugin = "test-report-aggregation")
 
