@@ -28,7 +28,7 @@ class TestCoverageAggregationPlugin : Plugin<Project> {
             .create(PatternFilterable::class, "coverage", PatternSet::class)
 
         val jacocoReport =
-            the<ReportingExtension>().reports.create<JacocoCoverageReport>("jacocoTestReport") {
+            the<ReportingExtension>().reports.create<JacocoCoverageReport>("jacocoAggregatedReport") {
                 testType.set(TestSuiteType.UNIT_TEST)
                 reportTask.configure {
                     classDirectories.setFrom(

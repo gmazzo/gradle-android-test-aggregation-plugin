@@ -21,7 +21,7 @@ plugins {
 > This plugin can not be applied along with the `java` one because it conflicts. 
 > If you have a Java root project, it's recommended to move it to a dedicated module
 
-The `jacocoTestReport` (for `coverage`) and `testAggregateTestReport` (for `results`) will be created 
+The `jacocoAggregatedReport` (for `coverage`) and `testAggregatedReport` (for `results`) will be created 
 to aggregate test results from all projects in the build
 
 The following is the old README.me of the demo project of my [Medium article](https://medium.com/p/53e912b2e63c) about this topic, 
@@ -59,7 +59,7 @@ You should not use classes names here but GLOB patterns.
 This is an example project that illustrates how can the 
 [JaCoCo Report Aggregation Plugin](https://docs.gradle.org/current/userguide/jacoco_report_aggregation_plugin.html) and
 [Test Report Aggregation Plugin](https://docs.gradle.org/current/userguide/test_report_aggregation_plugin.html)
-can be used to aggregate a complex Android project with JVM modules in a single `:jacocoTestReport` and `:testAggregateTestReport` tasks.
+can be used to aggregate a complex Android project with JVM modules in a single `:jacocoAggregatedReport` and `:testAggregatedReport` tasks.
 
 ## Project structure
 - A `plugin` included build that provides the `coverage` root plugin
@@ -73,9 +73,9 @@ The plugin fills the gaps between [AGP](https://developer.android.com/studio/rel
 [JaCoCo Report Aggregation Plugin](https://docs.gradle.org/current/userguide/jacoco_report_aggregation_plugin.html)
 by providing the necessary setup missing:
 - It applies `jacoco-report-aggregation` and `test-report-aggregation` at root project
-- Creates `jacocoTestReport` and `testAggregateTestReport` for `TestSuiteType.UNIT_TEST`
+- Creates `jacocoAggregatedReport` and `testAggregatedReport` for `TestSuiteType.UNIT_TEST`
 - If a module applies `jacoco` plugin, it adds it to the `jacocoAggregation` and `testReportAggregation` root configurations
-- If a module applies the `java` plugin, makes its child `jacocoTestReport` task to depend on `test`
+- If a module applies the `java` plugin, makes its child `jacocoAggregatedReport` task to depend on `test`
 - If a module applies the `android` plugin:
   - it enables by default `BuildType.enableUnitTestCoverage` on `debug` to produce jacoco exec files
   - adds the `codeCoverageExecutionData`, `codeCoverageSources`, `codeCoverageElements` (classes) and `testResultsElements`
@@ -85,11 +85,11 @@ Please note that JVM still need to manually apply `jacoco` plugin (this is an in
 [build.gradle.kts](build.gradle.kts#L3)
 
 ## Producing an aggregated report for the whole project
-The task `:jacocoTestReport` is added to the root project when applying this plugin and it can be
+The task `:jacocoAggregatedReport` is added to the root project when applying this plugin and it can be
 run to produce the report. All dependent `test` tasks will be run too to produce the required execution data.
 ![Aggregated JaCoCo Report example](README-aggregated-jacoco-report.png)
 
-The same for `:testAggregateTestReport`:
+The same for `:testAggregatedReport`:
 ![Aggregated Test Report example](README-aggregated-test-report.png)
 
 ## The `aggregateTestCoverage` DSL extension
@@ -98,10 +98,10 @@ This is an opt-in/out switch meant to be used when having `productFlavors`.
 `enableUnitTestCoverage` is a `BuildType` setting (default on `debug`). When having flavors, you'll
 have many coverage reports to produce targeting `debug` (one per flavor variant).
 You can use `enableUnitTestCoverage.set(false)` to turn aggregation off for an specific `ProductFlavor`. 
-Basically, the variant won't be added to the `codeCoverageExecutionData` configuration, so `:jacocoTestReport` won't compute it
+Basically, the variant won't be added to the `codeCoverageExecutionData` configuration, so `:jacocoAggregatedReport` won't compute it
 
 For instance, `app` module has a `environment` dimension with 2 flavors: `stage` and `prod`.
-Without any extra settings, `:jacocoTestReport` will depend on `:app:testStageDebugUnitTest` and 
+Without any extra settings, `:jacocoAggregatedReport` will depend on `:app:testStageDebugUnitTest` and 
 `:app:testProdDebugUnitTest` (running its `src/test/` tests effectively twice).
 You may choose which flavors participates in the aggregated report by doing:
 ```kotlin
