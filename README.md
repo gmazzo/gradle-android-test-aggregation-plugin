@@ -17,7 +17,7 @@ plugins {
     id("io.github.gmazzo.test.aggregation.results") version "<latest>"
 }
 ```
-> !NOTE
+> [!NOTE]
 > This plugin can not be applied along with the `java` one because it conflicts. 
 > If you have a Java root project, it's recommended to move it to a dedicated module
 
