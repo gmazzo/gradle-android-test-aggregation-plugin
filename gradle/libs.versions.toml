@@ -8,7 +8,7 @@ androidx-navigation = "2.7.1"
 [libraries]
 androidx-core = "androidx.core:core-ktx:1.12.0"
 androidx-appcompat = "androidx.appcompat:appcompat:1.6.1"
-androidx-annotation = "androidx.annotation:annotation:1.6.0"
+androidx-annotation = "androidx.annotation:annotation:1.7.0"
 androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
 androidx-livedata = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
 androidx-navigation-fragment = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "androidx-navigation" }
