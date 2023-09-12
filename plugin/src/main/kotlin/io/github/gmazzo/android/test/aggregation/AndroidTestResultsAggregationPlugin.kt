@@ -5,9 +5,11 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.TestSuiteType
+import org.gradle.api.attributes.Usage
 import org.gradle.api.attributes.VerificationType
 import org.gradle.api.tasks.testing.Test
 import org.gradle.configurationcache.extensions.capitalized
+import org.gradle.kotlin.dsl.USAGE_TEST_AGGREGATION
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.named
 
@@ -21,6 +23,7 @@ abstract class AndroidTestResultsAggregationPlugin : Plugin<Project> {
             isCanBeResolved = false
             isVisible = false
             attributes {
+                attribute(Usage.USAGE_ATTRIBUTE, objects.named(USAGE_TEST_AGGREGATION))
                 attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.VERIFICATION))
                 attribute(
                     TestSuiteType.TEST_SUITE_TYPE_ATTRIBUTE,
