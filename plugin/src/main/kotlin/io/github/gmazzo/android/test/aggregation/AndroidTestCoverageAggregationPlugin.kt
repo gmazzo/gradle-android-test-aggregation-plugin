@@ -95,6 +95,7 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             isCanBeResolved = false
             isVisible = false
             attributes {
+                attribute(Usage.USAGE_ATTRIBUTE, objects.named(USAGE_TEST_AGGREGATION))
                 attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.VERIFICATION))
                 attribute(
                     TestSuiteType.TEST_SUITE_TYPE_ATTRIBUTE,
@@ -129,6 +130,7 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             isCanBeResolved = false
             isVisible = false
             attributes {
+                attribute(Usage.USAGE_ATTRIBUTE, objects.named(USAGE_TEST_AGGREGATION))
                 attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.VERIFICATION))
                 attribute(
                     TestSuiteType.TEST_SUITE_TYPE_ATTRIBUTE,

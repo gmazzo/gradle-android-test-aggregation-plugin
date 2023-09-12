@@ -7,6 +7,7 @@ android {
     namespace = "com.example.login"
     compileSdk = libs.versions.android.sdk.get().toInt()
     buildFeatures.viewBinding = true
+    testFixtures.enable = true
 
     defaultConfig {
         minSdk = 21
