@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.9.0"
+kotlin = "1.9.10"
 agp = "8.1.1"
 android-sdk = "34"
 androidx-lifecycle = "2.6.2"
