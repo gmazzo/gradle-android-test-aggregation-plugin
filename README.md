@@ -116,3 +116,6 @@ You may choose which flavors participates in the aggregated report by doing:
     }
 ```
 where it effectively only run `:app:testStageDebugUnitTest`
+
+> [!NOTE]
+> The `aggregateTestCoverage` DSL applies for both `:jacocoAggregatedReport` and `:testAggregatedReport` tasks
