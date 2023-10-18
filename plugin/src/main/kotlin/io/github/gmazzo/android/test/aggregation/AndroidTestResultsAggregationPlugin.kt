@@ -1,14 +1,12 @@
 package io.github.gmazzo.android.test.aggregation
 
-import com.android.build.gradle.TestedExtension
+import com.android.build.api.variant.HasUnitTest
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.TestSuiteType
 import org.gradle.api.attributes.Usage
 import org.gradle.api.attributes.VerificationType
-import org.gradle.api.tasks.testing.Test
-import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.USAGE_TEST_AGGREGATION
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.named
@@ -16,9 +14,9 @@ import org.gradle.kotlin.dsl.named
 abstract class AndroidTestResultsAggregationPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {
-        apply(plugin = "com.android.base")
+        apply<AndroidTestBaseAggregationPlugin>()
 
-        configurations.create("testResultsElements") {
+        val testResultsElements = configurations.create("testResultsElements") {
             isCanBeConsumed = true
             isCanBeResolved = false
             isVisible = false
@@ -34,10 +32,15 @@ abstract class AndroidTestResultsAggregationPlugin : Plugin<Project> {
                     objects.named(VerificationType.TEST_RESULTS)
                 )
             }
-            (android as? TestedExtension)?.unitTestVariants?.all {
-                val testTask = tasks.named<Test>("test${name.capitalized()}")
+        }
 
-                outgoing.artifact(testTask.flatMap { it.binaryResultsDirectory })
+        androidComponents.onVariants { variant ->
+            if ((variant as? HasUnitTest)?.unitTest != null && android.shouldAggregate(variant)) {
+                afterEvaluate {
+                    val testTask = unitTestTaskOf(variant)!!
+
+                    testResultsElements.outgoing.artifact(testTask.flatMap { it.binaryResultsDirectory })
+                }
             }
         }
     }

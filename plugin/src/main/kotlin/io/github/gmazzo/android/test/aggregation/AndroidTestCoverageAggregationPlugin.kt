@@ -3,6 +3,7 @@
 package io.github.gmazzo.android.test.aggregation
 
 import com.android.build.api.artifact.ScopedArtifact
+import com.android.build.api.variant.HasUnitTest
 import com.android.build.api.variant.ScopedArtifacts
 import com.android.build.api.variant.Variant
 import org.gradle.api.Plugin
@@ -17,14 +18,12 @@ import org.gradle.api.file.Directory
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.file.RegularFile
 import org.gradle.api.plugins.ExtensionAware
-import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Sync
-import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.USAGE_TEST_AGGREGATION
-import org.gradle.kotlin.dsl.aggregateTestCoverage
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.getAt
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.named
@@ -33,60 +32,27 @@ import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.registering
 import org.gradle.kotlin.dsl.the
-import org.gradle.kotlin.dsl.typeOf
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 
 abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {
-        apply(plugin = "com.android.base")
+        apply<AndroidTestBaseAggregationPlugin>()
         addRobolectricTestsSupport()
 
         // enables jacoco test coverage on `debug` build type by default
         android.buildTypes["debug"].enableUnitTestCoverage = true
-
-        android.buildTypes.configureEach {
-            extensions.add(
-                typeOf<Property<Boolean>>(),
-                ::aggregateTestCoverage.name,
-                objects.property()
-            )
-        }
-        android.productFlavors.configureEach {
-            extensions.add(
-                typeOf<Property<Boolean>>(),
-                ::aggregateTestCoverage.name,
-                objects.property()
-            )
-        }
 
         val jacocoVariants = objects.namedDomainObjectSet(Variant::class)
 
         androidComponents.onVariants { variant ->
             val buildType = android.buildTypes[variant.buildType!!]
 
-            if (variant.unitTest != null && buildType.enableUnitTestCoverage) {
-                afterEvaluate {
-                    /**
-                     * `aggregateTestCoverage` applies to `BuildType`s and `Flavor`s and
-                     * can take 3 possible values: `true`, `false` or `null` (missing).
-                     *
-                     * Because of this, we may found conflicting declarations where a
-                     * `BuildType` is set to `true` but a `Flavor` to `false`.
-                     * The following logic is no honor the precedence order:
-                     * - If any component of the variant (buildType/flavor) says `true`, then `true`
-                     * - If any component of the variant says `false` (and other says nothing `null`), then `false`
-                     * - If no component says anything (`null`), then `true` (because its `BuildType` has `enableUnitTestCoverage = true`)
-                     */
-                    val aggregateSources = sequenceOf(buildType.aggregateTestCoverage) +
-                            variant.productFlavors.asSequence()
-                                .map { (_, flavor) -> android.productFlavors[flavor] }
-                                .map { it.aggregateTestCoverage }
-
-                    if (aggregateSources.shouldAggregate) {
-                        jacocoVariants.add(variant)
-                    }
-                }
+            if ((variant as? HasUnitTest)?.unitTest != null &&
+                buildType.enableUnitTestCoverage &&
+                android.shouldAggregate(variant)
+            ) {
+                jacocoVariants.add(variant)
             }
         }
 
@@ -106,13 +72,14 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
                     objects.named(VerificationType.JACOCO_RESULTS)
                 )
             }
-            jacocoVariants.all variant@{
-                val execData = tasks
-                    .named("test${this@variant.unitTest!!.name.capitalized()}")
-                    .map { it.the<JacocoTaskExtension>().destinationFile!! }
+            afterEvaluate {
+                jacocoVariants.all variant@{
+                    val execData = unitTestTaskOf(this@variant)!!
+                        .map { it.the<JacocoTaskExtension>().destinationFile!! }
 
-                outgoing.artifact(execData) {
-                    type = ArtifactTypeDefinition.BINARY_DATA_TYPE
+                    outgoing.artifact(execData) {
+                        type = ArtifactTypeDefinition.BINARY_DATA_TYPE
+                    }
                 }
             }
         }
@@ -194,6 +161,7 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
         val robolectricSupport = objects.property<Boolean>()
             .convention(true)
             .apply { finalizeValueOnRead() }
+            .also(plugins.getAt(AndroidTestBaseAggregationPlugin::class).extendedProperties::add)
 
         (android as ExtensionAware).extensions
             .add("coverageRobolectricSupport", robolectricSupport)
@@ -211,9 +179,5 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             }
         }
     }
-
-    private val Sequence<Property<Boolean>>.shouldAggregate
-        get() = mapNotNull { it.orNull }
-            .reduceOrNull { acc, aggregate -> acc || aggregate } != false
 
 }
