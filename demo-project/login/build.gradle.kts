@@ -3,14 +3,16 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
+
 android {
     namespace = "com.example.login"
-    compileSdk = libs.versions.android.sdk.get().toInt()
     buildFeatures.viewBinding = true
     testFixtures.enable = true
 
+    compileSdk = libs.versions.android.compileSDK.get().toInt()
     defaultConfig {
-        minSdk = 21
+        minSdk = libs.versions.android.minSDK.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
