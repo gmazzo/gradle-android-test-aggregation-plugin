@@ -48,3 +48,15 @@ dependencies {
     implementation(libs.androidx.test.junit)
     implementation(libs.androidx.test.espresso)
 }
+
+val acceptAndroidLicences by tasks.registering(Exec::class) {
+    val androidHome = androidComponents.sdkComponents.sdkDirectory.get().asFile.absolutePath
+
+    commandLine("bash", "-c", "yes | $androidHome/cmdline-tools/latest/bin/sdkmanager --licenses")
+}
+
+afterEvaluate {
+    tasks.named("${pixel2.name}Setup") {
+        dependsOn(acceptAndroidLicences)
+    }
+}

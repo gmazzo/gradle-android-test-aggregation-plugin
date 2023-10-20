@@ -11,3 +11,15 @@ runs:
         java-version: '17'
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
+    - name: Setup `ANDROID_HOME` environment variable
+      shell: bash
+      run: echo ANDROID_HOME=~/android/sdk >> $GITHUB_ENV
+    - name: Cache Android SDK
+      uses: actions/cache@v3
+      with:
+        key: ${{ runner.os }}/${{ runner.arch }}-android-sdk
+        path: ${{ env.ANDROID_HOME }}
+    - # https://developer.android.com/studio/test/gradle-managed-devices#create_a_gradle_managed_device
+      name: Set `swiftshader_indirect` on Android Emulators (required by GHA)
+      shell: bash
+      run: echo "android.testoptions.manageddevices.emulator.gpu=swiftshader_indirect" >> ~/.gradle/gradle.properties
