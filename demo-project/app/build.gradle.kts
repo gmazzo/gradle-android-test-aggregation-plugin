@@ -3,14 +3,16 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
+
 android {
     namespace = "com.example.myapplication"
-    compileSdk = libs.versions.android.sdk.get().toInt()
     buildFeatures.viewBinding = true
 
+    compileSdk = libs.versions.android.compileSDK.get().toInt()
     defaultConfig {
-        applicationId = "com.example.myapplication"
-        minSdk = 21
+        minSdk = libs.versions.android.minSDK.get().toInt()
+
         versionCode = 1
         versionName = "1.0"
 

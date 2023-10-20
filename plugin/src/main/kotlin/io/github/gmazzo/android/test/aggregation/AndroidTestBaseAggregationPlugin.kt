@@ -2,9 +2,9 @@
 
 package io.github.gmazzo.android.test.aggregation
 
+import org.gradle.api.DomainObjectSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.aggregateTestCoverage
 import org.gradle.kotlin.dsl.apply
@@ -13,7 +13,7 @@ import org.gradle.kotlin.dsl.typeOf
 
 internal abstract class AndroidTestBaseAggregationPlugin : Plugin<Project> {
 
-    internal abstract val extendedProperties: ListProperty<Property<*>>
+    abstract val extendedProperties: DomainObjectSet<Property<*>>
 
     override fun apply(target: Project): Unit = with(target) {
         apply(plugin = "com.android.base")
@@ -34,8 +34,7 @@ internal abstract class AndroidTestBaseAggregationPlugin : Plugin<Project> {
         }
 
         androidComponents.finalizeDsl {
-            extendedProperties.finalizeValue()
-            extendedProperties.get().forEach { it.finalizeValue() }
+            extendedProperties.all { finalizeValue() }
         }
     }
 
