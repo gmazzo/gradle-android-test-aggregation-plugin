@@ -11,7 +11,7 @@ jobs:
   release:
     name: Release
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: macos-latest # to use Android emulator
     steps:
       - name: Checkout
         uses: actions/checkout@v4
