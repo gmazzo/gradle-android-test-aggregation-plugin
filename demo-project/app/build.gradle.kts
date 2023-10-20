@@ -24,7 +24,10 @@ android {
             enableUnitTestCoverage = true
         }
         release {
+            aggregateTestCoverage = false
+
             isMinifyEnabled = false
+            signingConfig = getByName("debug").signingConfig
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -68,7 +71,4 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
-
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espresso)
 }
