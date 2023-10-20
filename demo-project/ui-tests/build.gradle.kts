@@ -1,5 +1,8 @@
+import com.android.build.api.dsl.ManagedVirtualDevice
+
 plugins {
     alias(libs.plugins.android.test)
+    alias(libs.plugins.android.baseline)
     alias(libs.plugins.kotlin.android)
 }
 
@@ -20,4 +23,28 @@ android {
 
         missingDimensionStrategy("environment", "stage")
     }
+
+    testOptions.managedDevices.devices {
+        create<ManagedVirtualDevice>("emulator") {
+            device = "Pixel 2"
+            apiLevel = android.compileSdk!!
+            systemImageSource = "aosp-atd"
+        }
+    }
+}
+
+val pixel2 by android.testOptions.managedDevices.devices.creating(ManagedVirtualDevice::class) {
+    device = "Pixel 6"
+    apiLevel = 30
+    systemImageSource = "aosp-atd"
+}
+
+baselineProfile {
+    useConnectedDevices = false
+    managedDevices += pixel2.name
+}
+
+dependencies {
+    implementation(libs.androidx.test.junit)
+    implementation(libs.androidx.test.espresso)
 }
