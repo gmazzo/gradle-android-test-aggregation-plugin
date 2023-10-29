@@ -92,6 +92,33 @@ run to produce the report. All dependent `test` tasks will be run too to produce
 The same for `:testAggregatedReport`:
 ![Aggregated Test Report example](README-aggregated-test-report.png)
 
+## Enforcing aggregated code coverage metrics
+The same as `JaCoCo Plugin` supports [Enforcing code coverage metrics](https://docs.gradle.org/current/userguide/jacoco_plugin.html#ex-configuring-violation-rules)
+this plugin adds a ':jacocoAggregatedCoverageVerification' to provide the same feature, but with the aggregated metrics:
+```kotlin
+tasks.jacocoAggregatedCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.5".toBigDecimal()
+            }
+        }
+
+        rule {
+            isEnabled = false
+            element = "CLASS"
+            includes = listOf("org.gradle.*")
+
+            limit {
+                counter = "LINE"
+                value = "TOTALCOUNT"
+                maximum = "0.3".toBigDecimal()
+            }
+        }
+    }
+}
+```
+
 ## The `aggregateTestCoverage` DSL extension
 This is an opt-in/out switch meant to be used when having `productFlavors`.
 

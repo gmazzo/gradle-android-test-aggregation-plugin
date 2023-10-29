@@ -13,3 +13,21 @@ testAggregation {
         exclude("**/ContentMainBinding*")
     }
 }
+
+tasks.jacocoAggregatedCoverageVerification {
+    violationRules {
+        rule {
+            limit {// current 19%
+                minimum = "0.19".toBigDecimal()
+            }
+            limit {// desired 80%
+                minimum = "0.8".toBigDecimal()
+                isFailOnViolation = false
+            }
+        }
+    }
+}
+
+tasks.check {
+    dependsOn(tasks.jacocoAggregatedCoverageVerification)
+}
