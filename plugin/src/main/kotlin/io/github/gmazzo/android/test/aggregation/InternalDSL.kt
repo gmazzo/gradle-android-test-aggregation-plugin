@@ -1,9 +1,12 @@
 package io.github.gmazzo.android.test.aggregation
 
 import com.android.build.api.variant.AndroidComponentsExtension
-import com.android.build.api.variant.HasUnitTest
+import com.android.build.api.variant.ComponentIdentity
+import com.android.build.api.variant.GeneratesTestApk
+import com.android.build.api.variant.UnitTest
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.internal.coverage.JacocoReportTask
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.testing.AbstractTestTask
@@ -13,7 +16,6 @@ import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByName
-import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.testAggregation
 import org.gradle.kotlin.dsl.the
 
@@ -60,6 +62,10 @@ internal fun TestAggregationExtension.aggregateProject(project: Project, config:
 private fun TestAggregationExtension.Modules.includes(project: Project) =
     (includes.get().isEmpty() || project in includes.get()) && project !in excludes.get()
 
-internal fun Project.unitTestTaskOf(variant: Variant) = (variant as? HasUnitTest)
-    ?.unitTest
-    ?.let { tasks.named<AbstractTestTask>("test${it.name.capitalized()}") }
+internal fun Project.unitTestTaskOf(variant: UnitTest) = provider {
+    tasks.getByName<AbstractTestTask>("test${variant.name.capitalized()}")
+}
+
+internal fun <Type> Project.androidTestTaskOf(variant: Type) where Type : GeneratesTestApk, Type: ComponentIdentity = provider {
+    tasks.getByName<JacocoReportTask>("create${variant.name.capitalized()}CoverageReport")
+}

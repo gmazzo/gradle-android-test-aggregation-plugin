@@ -29,6 +29,12 @@ now promoted to dedicated Gradle plugins:
 [io.github.gmazzo.test.aggregation.coverage](https://plugins.gradle.org/plugin/io.github.gmazzo.test.aggregation.coverage) and
 [io.github.gmazzo.test.aggregation.results](https://plugins.gradle.org/plugin/io.github.gmazzo.test.aggregation.results)
 
+
+## `UnitTest` and `AndroidTest` code coverage support
+By default, the plugin will do `buildTypes["debug]".enableUnitTestCoverage = true` when applied, allowing coverage to be collected.
+
+Coverage on `AndroidTest` variant is also support and will be automatically collected, if `buildType["debug"].enableAndroidTestCoverage = true` is also set (it applies for any `BuildType`)
+
 ## Filtering content
 The plugins will automatically aggregate `android` modules and `java` modules that also apply `jacoco` plugin on the
 `jacocoAggregation` and the `testReportAggregation` configurations.

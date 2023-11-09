@@ -33,18 +33,18 @@ android {
     }
 }
 
-val pixel2 by android.testOptions.managedDevices.devices.creating(ManagedVirtualDevice::class) {
-    device = "Pixel 6"
-    apiLevel = 30
-    systemImageSource = "aosp-atd"
+androidComponents.finalizeDsl {
+    // added this here, because the `baselineprofile` plugin resets it back to false for some reason
+    android.buildTypes["nonMinifiedRelease"].enableAndroidTestCoverage = true
 }
 
 baselineProfile {
     useConnectedDevices = false
-    managedDevices += pixel2.name
+    managedDevices += "pixel2"
 }
 
 dependencies {
+    implementation(projects.demoProject.app)
     implementation(libs.androidx.test.junit)
     implementation(libs.androidx.test.espresso)
 }

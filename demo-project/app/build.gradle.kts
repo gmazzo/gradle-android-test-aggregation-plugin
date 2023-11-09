@@ -21,7 +21,8 @@ android {
 
     buildTypes {
         debug {
-            enableUnitTestCoverage = true
+            // FIXME UI tests requires an emulator on CI
+            enableAndroidTestCoverage = true
         }
         release {
             aggregateTestCoverage = false
@@ -39,7 +40,7 @@ android {
         }
         create("prod") {
             dimension = "environment"
-            //aggregateTestCoverage.set(false)
+            aggregateTestCoverage.set(false)
         }
     }
 
@@ -71,4 +72,7 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
+
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.test.espresso)
 }
