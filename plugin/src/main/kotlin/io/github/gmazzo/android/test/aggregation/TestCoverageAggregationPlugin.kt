@@ -33,10 +33,8 @@ class TestCoverageAggregationPlugin : Plugin<Project> {
             the<ReportingExtension>().reports.create<JacocoCoverageReport>("jacocoAggregatedReport") {
                 testType.set(TestSuiteType.UNIT_TEST)
                 reportTask.configure {
-                    classDirectories.setFrom(
-                        files(*classDirectories.from.toTypedArray()).asFileTree
-                            .matching(coverageExtension)
-                    )
+                    executionData.setFrom(files(*executionData.from.toTypedArray()).asFileTree)
+                    classDirectories.setFrom(files(*classDirectories.from.toTypedArray()).asFileTree.matching(coverageExtension))
                 }
             }
 

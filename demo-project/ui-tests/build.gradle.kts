@@ -1,4 +1,5 @@
 import com.android.build.api.dsl.ManagedVirtualDevice
+import com.android.build.gradle.internal.tasks.ManagedDeviceInstrumentationTestSetupTask
 
 plugins {
     alias(libs.plugins.android.test)
@@ -55,8 +56,6 @@ val acceptAndroidLicences by tasks.registering(Exec::class) {
     commandLine("bash", "-c", "yes | $androidHome/cmdline-tools/latest/bin/sdkmanager --licenses")
 }
 
-afterEvaluate {
-    tasks.named("${pixel2.name}Setup") {
-        dependsOn(acceptAndroidLicences)
-    }
+tasks.withType<ManagedDeviceInstrumentationTestSetupTask>().configureEach {
+    dependsOn(acceptAndroidLicences)
 }
