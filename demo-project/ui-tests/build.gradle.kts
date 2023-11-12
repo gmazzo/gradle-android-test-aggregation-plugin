@@ -1,5 +1,4 @@
 import com.android.build.api.dsl.ManagedVirtualDevice
-import com.android.build.gradle.internal.tasks.ManagedDeviceInstrumentationTestSetupTask
 
 plugins {
     alias(libs.plugins.android.test)
@@ -48,14 +47,4 @@ baselineProfile {
 dependencies {
     implementation(libs.androidx.test.junit)
     implementation(libs.androidx.test.espresso)
-}
-
-val acceptAndroidLicences by tasks.registering(Exec::class) {
-    val androidHome = androidComponents.sdkComponents.sdkDirectory.get().asFile.absolutePath
-
-    commandLine("bash", "-c", "yes | $androidHome/cmdline-tools/latest/bin/sdkmanager --licenses")
-}
-
-tasks.withType<ManagedDeviceInstrumentationTestSetupTask>().configureEach {
-    dependsOn(acceptAndroidLicences)
 }
