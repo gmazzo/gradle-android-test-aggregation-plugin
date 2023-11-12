@@ -1,5 +1,6 @@
 package io.github.gmazzo.android.test.aggregation
 
+import com.android.build.api.variant.HasAndroidTest
 import com.android.build.api.variant.HasUnitTest
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -35,12 +36,14 @@ abstract class AndroidTestResultsAggregationPlugin : Plugin<Project> {
         }
 
         androidComponents.onVariants { variant ->
-            if ((variant as? HasUnitTest)?.unitTest != null && android.shouldAggregate(variant)) {
-                afterEvaluate {
-                    val testTask = unitTestTaskOf(variant)!!
+            val unitTest = (variant as? HasUnitTest)?.unitTest
+            val androidTest = (variant as? HasAndroidTest)?.androidTest
 
-                    testResultsElements.outgoing.artifact(testTask.flatMap { it.binaryResultsDirectory })
-                }
+            if (unitTest != null && android.shouldAggregate(variant)) {
+                testResultsElements.outgoing.artifact(unitTestTaskOf(unitTest).flatMap { it.binaryResultsDirectory })
+            }
+            if (androidTest != null && android.shouldAggregate(variant)) {
+                // TODO testResultsElements.outgoing.artifact(androidTestTaskOf(androidTest).flatMap { it.binaryResultsDirectory })
             }
         }
     }

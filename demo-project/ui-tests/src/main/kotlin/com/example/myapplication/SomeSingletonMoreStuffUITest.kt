@@ -12,11 +12,14 @@ import org.junit.runner.RunWith
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class ExampleInstrumentedTest {
+class SomeSingletonMoreStuffUITest {
     @Test
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.app.test", appContext.packageName)
+        assertEquals("com.example.app", appContext.packageName)
+
+        SomeSingleton.doMoreStuff() // to mark coverage of UI tests
     }
 }
+

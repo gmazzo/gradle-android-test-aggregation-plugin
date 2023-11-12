@@ -3,9 +3,12 @@
 package io.github.gmazzo.android.test.aggregation
 
 import com.android.build.api.artifact.ScopedArtifact
+import com.android.build.api.variant.HasAndroidTest
 import com.android.build.api.variant.HasUnitTest
 import com.android.build.api.variant.ScopedArtifacts
+import com.android.build.api.variant.TestVariant
 import com.android.build.api.variant.Variant
+import com.android.build.gradle.internal.scope.InternalArtifactType
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.type.ArtifactTypeDefinition
@@ -31,7 +34,6 @@ import org.gradle.kotlin.dsl.namedDomainObjectSet
 import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.registering
-import org.gradle.kotlin.dsl.the
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 
 abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
@@ -43,16 +45,41 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
         // enables jacoco test coverage on `debug` build type by default
         android.buildTypes["debug"].enableUnitTestCoverage = true
 
-        val jacocoVariants = objects.namedDomainObjectSet(Variant::class)
+        val aggregatedVariants = objects.namedDomainObjectSet(Variant::class)
 
-        androidComponents.onVariants { variant ->
+        val allVariantsExecDataForCoverageReport by tasks.registering(Sync::class) {
+            destinationDir = temporaryDir
+        }
+
+        androidComponents.onVariants(androidComponents.selector().all()) { variant ->
             val buildType = android.buildTypes[variant.buildType!!]
 
-            if ((variant as? HasUnitTest)?.unitTest != null &&
-                buildType.enableUnitTestCoverage &&
-                android.shouldAggregate(variant)
-            ) {
-                jacocoVariants.add(variant)
+            if (android.shouldAggregate(variant)) {
+                val unitTest = (variant as? HasUnitTest)?.unitTest
+                val androidTest = (variant as? HasAndroidTest)?.androidTest
+
+                if (buildType.enableUnitTestCoverage && unitTest != null) {
+                    aggregatedVariants.add(variant)
+                    allVariantsExecDataForCoverageReport.configure {
+                        from(unitTest.artifacts.get(InternalArtifactType.UNIT_TEST_CODE_COVERAGE)) {
+                            into("unitTest")
+                        }
+                    }
+                }
+                if (buildType.enableAndroidTestCoverage && androidTest != null) {
+                    aggregatedVariants.add(variant)
+                    allVariantsExecDataForCoverageReport.configure {
+                        from(androidTest.artifacts.get(InternalArtifactType.CODE_COVERAGE)) {
+                            into("androidTest")
+                        }
+                    }
+                }
+                if (buildType.enableAndroidTestCoverage && variant is TestVariant) {
+                    aggregatedVariants.add(variant)
+                    allVariantsExecDataForCoverageReport.configure {
+                        from(variant.artifacts.get(InternalArtifactType.CODE_COVERAGE))
+                    }
+                }
             }
         }
 
@@ -72,22 +99,15 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
                     objects.named(VerificationType.JACOCO_RESULTS)
                 )
             }
-            afterEvaluate {
-                jacocoVariants.all variant@{
-                    val execData = unitTestTaskOf(this@variant)!!
-                        .map { it.the<JacocoTaskExtension>().destinationFile!! }
-
-                    outgoing.artifact(execData) {
-                        type = ArtifactTypeDefinition.BINARY_DATA_TYPE
-                    }
-                }
+            outgoing.artifact(allVariantsExecDataForCoverageReport.map { it.destinationDir }) {
+                type = ArtifactTypeDefinition.BINARY_DATA_TYPE
             }
         }
 
         val allVariantsSourcesForCoverageReport by tasks.registering(Sync::class) {
             destinationDir = temporaryDir
             duplicatesStrategy = DuplicatesStrategy.INCLUDE // in case of duplicated classes
-            jacocoVariants.all {
+            aggregatedVariants.all {
                 from(sources.java?.all, sources.kotlin?.all)
             }
         }
@@ -132,7 +152,7 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             )
         }
 
-        jacocoVariants.all task@{
+        aggregatedVariants.all task@{
             artifacts
                 .forScope(ScopedArtifacts.Scope.PROJECT)
                 .use(allVariantsClassesForCoverageReport)
