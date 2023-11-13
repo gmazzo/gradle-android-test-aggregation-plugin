@@ -1,6 +1,6 @@
 [versions]
 kotlin = "1.9.20"
-agp = "8.1.2"
+agp = "8.1.3"
 android-minSDK = "21"
 android-compileSDK = "34"
 androidx-lifecycle = "2.6.2"
