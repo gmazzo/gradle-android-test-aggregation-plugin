@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.samReceiver)
     alias(libs.plugins.gradle.pluginPublish)
+    alias(libs.plugins.publicationsReport)
 }
 
 group = "io.github.gmazzo.test.aggregation"
