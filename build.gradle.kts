@@ -1,4 +1,6 @@
 plugins {
+    base
+    `maven-publish`
     alias(libs.plugins.android) apply false
     alias(libs.plugins.android.lib) apply false
     alias(libs.plugins.android.test) apply false
@@ -9,20 +11,20 @@ plugins {
 
 val pluginBuild = gradle.includedBuild("plugin")
 
-tasks.register(LifecycleBasePlugin.BUILD_TASK_NAME) {
+tasks.build {
     dependsOn(pluginBuild.task(":$name"))
 }
 
-tasks.register(LifecycleBasePlugin.CHECK_TASK_NAME) {
+tasks.check {
     dependsOn(pluginBuild.task(":$name"))
 }
 
-tasks.register(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME) {
+tasks.publish {
     dependsOn(pluginBuild.task(":$name"))
     finalizedBy(tasks.reportPublications)
 }
 
-tasks.register(MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME) {
+tasks.publishToMavenLocal {
     dependsOn(pluginBuild.task(":$name"))
     finalizedBy(tasks.reportPublications)
 }
