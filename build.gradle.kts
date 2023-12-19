@@ -21,10 +21,8 @@ tasks.check {
 
 tasks.publish {
     dependsOn(pluginBuild.task(":$name"))
-    finalizedBy(tasks.reportPublications)
 }
 
 tasks.publishToMavenLocal {
     dependsOn(pluginBuild.task(":$name"))
-    finalizedBy(tasks.reportPublications)
 }
