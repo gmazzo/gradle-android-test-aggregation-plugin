@@ -23,14 +23,6 @@ android {
 
         missingDimensionStrategy("environment", "stage")
     }
-
-    testOptions.managedDevices.devices {
-        create<ManagedVirtualDevice>("emulator") {
-            device = "Pixel 2"
-            apiLevel = android.compileSdk!!
-            systemImageSource = "aosp-atd"
-        }
-    }
 }
 
 val pixel2 by android.testOptions.managedDevices.devices.creating(ManagedVirtualDevice::class) {
