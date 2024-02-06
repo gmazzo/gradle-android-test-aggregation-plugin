@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.samReceiver)
     alias(libs.plugins.gradle.pluginPublish)
     alias(libs.plugins.publicationsReport)
+    jacoco
 }
 
 group = "io.github.gmazzo.test.aggregation"
@@ -47,6 +48,14 @@ dependencies {
 
     compileOnly(gradleKotlinDsl())
     compileOnly(plugin(libs.plugins.android))
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    reports.xml.required = true
 }
 
 tasks.publish {
