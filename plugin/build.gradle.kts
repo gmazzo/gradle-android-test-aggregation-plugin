@@ -48,9 +48,17 @@ dependencies {
 
     compileOnly(gradleKotlinDsl())
     compileOnly(plugin(libs.plugins.android))
+
+    testImplementation(gradleKotlinDsl())
+    testImplementation(plugin(libs.plugins.android))
+}
+
+testing.suites.withType<JvmTestSuite>() {
+    useKotlinTest(libs.versions.kotlin)
 }
 
 tasks.test {
+    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(17) }
     finalizedBy(tasks.jacocoTestReport)
 }
 
