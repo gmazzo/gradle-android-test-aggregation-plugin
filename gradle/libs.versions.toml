@@ -4,7 +4,7 @@ agp = "8.2.2"
 android-minSDK = "21"
 android-compileSDK = "34"
 androidx-lifecycle = "2.7.0"
-androidx-navigation = "2.7.6"
+androidx-navigation = "2.7.7"
 
 [libraries]
 androidx-core = "androidx.core:core-ktx:1.12.0"
