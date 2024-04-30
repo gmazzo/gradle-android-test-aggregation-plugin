@@ -1,8 +1,6 @@
 package com.example.myapplication
 
 import org.junit.Assert.assertEquals
-import org.junit.Assert.fail
-import org.junit.Ignore
 import org.junit.Test
 
 /**
@@ -10,20 +8,9 @@ import org.junit.Test
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-class ExampleUnitTest {
+class ExampleFailingTest private constructor(){
     @Test
-    fun addition_isCorrect() {
+    fun test() {
         assertEquals(4, 2 + 2)
-    }
-
-    @Test
-    fun failing_test() {
-        fail("this is a sample failure")
-    }
-
-    @Test
-    @Ignore
-    fun ignored_test() {
-        fail("this is a sample failure")
     }
 }
