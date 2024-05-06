@@ -7,7 +7,7 @@ androidx-lifecycle = "2.7.0"
 androidx-navigation = "2.7.7"
 
 [libraries]
-androidx-core = "androidx.core:core-ktx:1.13.0"
+androidx-core = "androidx.core:core-ktx:1.13.1"
 androidx-appcompat = "androidx.appcompat:appcompat:1.6.1"
 androidx-annotation = "androidx.annotation:annotation:1.7.1"
 androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
