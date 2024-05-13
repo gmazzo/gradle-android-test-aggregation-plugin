@@ -18,9 +18,14 @@ runs:
       uses: gradle/actions/setup-gradle@v3
       with:
         cache-encryption-key: ${{ inputs.gradle-encryption-key }}
+    - name: Add Android SDK to PATH
+      shell: bash
+      run: |
+        echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+        echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
     - name: Accept Android licences
       shell: bash
-      run: (yes || true) | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+      run: yes | sdkmanager --licenses || true
     - # https://developer.android.com/studio/test/gradle-managed-devices#create_a_gradle_managed_device
       name: Set `swiftshader_indirect` on Android Emulators (required by GHA)
       shell: bash
