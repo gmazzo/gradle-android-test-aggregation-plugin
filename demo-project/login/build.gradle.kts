@@ -32,11 +32,6 @@ android {
             )
         }
     }
-
-    compileOptions {
-        sourceCompatibility(java.sourceCompatibility)
-        targetCompatibility(java.targetCompatibility)
-    }
 }
 
 dependencies {
