@@ -25,15 +25,15 @@ android {
     }
 }
 
-val pixel2 by android.testOptions.managedDevices.devices.creating(ManagedVirtualDevice::class) {
-    device = "Pixel 6"
-    apiLevel = 30
-    systemImageSource = "aosp-atd"
+val emulator by android.testOptions.managedDevices.devices.creating(ManagedVirtualDevice::class) {
+    device = "Pixel 2"
+    apiLevel = libs.versions.android.compileSDK.get().toInt()
+    systemImageSource = "aosp_atd"
 }
 
 baselineProfile {
     useConnectedDevices = false
-    managedDevices += pixel2.name
+    managedDevices += emulator.name
 }
 
 dependencies {
