@@ -18,10 +18,18 @@ runs:
       uses: gradle/actions/setup-gradle@v3
       with:
         cache-encryption-key: ${{ inputs.gradle-encryption-key }}
+        cache-read-only: false
+    - name: Add Android SDK to PATH
+      shell: bash
+      run: |
+        echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+        echo "$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools" >> "$GITHUB_PATH"
     - name: Accept Android licences
       shell: bash
-      run: (yes || true) | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-    - # https://developer.android.com/studio/test/gradle-managed-devices#create_a_gradle_managed_device
-      name: Set `swiftshader_indirect` on Android Emulators (required by GHA)
+      run: yes | sdkmanager --licenses || true
+    - name: Enable Hardware Acceleration
       shell: bash
-      run: echo "android.testoptions.manageddevices.emulator.gpu=swiftshader_indirect" >> ~/.gradle/gradle.properties
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
