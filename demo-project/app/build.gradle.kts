@@ -43,11 +43,6 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility(java.sourceCompatibility)
-        targetCompatibility(java.targetCompatibility)
-    }
-
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
