@@ -19,6 +19,9 @@ runs:
       with:
         cache-encryption-key: ${{ inputs.gradle-encryption-key }}
         cache-read-only: false
+        build-scan-publish: true
+        build-scan-terms-of-use-url: 'https://gradle.com/terms-of-service'
+        build-scan-terms-of-use-agree: 'yes'
     - name: Add Android SDK to PATH
       shell: bash
       run: |
