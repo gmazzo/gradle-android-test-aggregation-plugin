@@ -2,7 +2,6 @@
 
 package io.github.gmazzo.android.test.aggregation
 
-import org.gradle.api.DomainObjectSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
@@ -13,8 +12,6 @@ import org.gradle.kotlin.dsl.typeOf
 
 internal abstract class AndroidTestBaseAggregationPlugin : Plugin<Project> {
 
-    abstract val extendedProperties: DomainObjectSet<Property<*>>
-
     override fun apply(target: Project): Unit = with(target) {
         apply(plugin = "com.android.base")
 
@@ -22,19 +19,15 @@ internal abstract class AndroidTestBaseAggregationPlugin : Plugin<Project> {
             extensions.add(
                 typeOf<Property<Boolean>>(),
                 ::aggregateTestCoverage.name,
-                objects.property<Boolean>().also(extendedProperties::add)
+                objects.property<Boolean>()
             )
         }
         android.productFlavors.configureEach {
             extensions.add(
                 typeOf<Property<Boolean>>(),
                 ::aggregateTestCoverage.name,
-                objects.property<Boolean>().also(extendedProperties::add)
+                objects.property<Boolean>()
             )
-        }
-
-        androidComponents.finalizeDsl {
-            extendedProperties.all { finalizeValue() }
         }
     }
 

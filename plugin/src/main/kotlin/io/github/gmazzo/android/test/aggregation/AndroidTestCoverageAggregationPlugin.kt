@@ -23,7 +23,6 @@ import org.gradle.kotlin.dsl.USAGE_TEST_AGGREGATION
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.getAt
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.named
@@ -46,14 +45,14 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
         val jacocoVariants = objects.namedDomainObjectSet(Variant::class)
 
         androidComponents.onVariants { variant ->
-            val buildType = android.buildTypes[variant.buildType!!]
+            jacocoVariants.addAllLater(provider {
+                val buildType = android.buildTypes[variant.buildType!!]
+                val aggregate = (variant as? HasUnitTest)?.unitTest != null &&
+                        buildType.enableUnitTestCoverage &&
+                        android.shouldAggregate(variant)
 
-            if ((variant as? HasUnitTest)?.unitTest != null &&
-                buildType.enableUnitTestCoverage &&
-                android.shouldAggregate(variant)
-            ) {
-                jacocoVariants.add(variant)
-            }
+                if (aggregate) listOf(variant) else emptyList()
+            })
         }
 
         configurations.create("codeCoverageExecutionData") {
@@ -161,7 +160,6 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
         val robolectricSupport = objects.property<Boolean>()
             .convention(true)
             .apply { finalizeValueOnRead() }
-            .also(plugins.getAt(AndroidTestBaseAggregationPlugin::class).extendedProperties::add)
 
         (android as ExtensionAware).extensions
             .add("coverageRobolectricSupport", robolectricSupport)
