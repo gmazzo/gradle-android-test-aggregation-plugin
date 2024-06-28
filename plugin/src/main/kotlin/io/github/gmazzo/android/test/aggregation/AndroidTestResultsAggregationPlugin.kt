@@ -35,13 +35,11 @@ abstract class AndroidTestResultsAggregationPlugin : Plugin<Project> {
         }
 
         androidComponents.onVariants { variant ->
-            if ((variant as? HasUnitTest)?.unitTest != null && android.shouldAggregate(variant)) {
-                afterEvaluate {
-                    val testTask = unitTestTaskOf(variant)!!
+            testResultsElements.outgoing.artifacts(provider {
+                val aggregate = (variant as? HasUnitTest)?.unitTest != null && android.shouldAggregate(variant)
 
-                    testResultsElements.outgoing.artifact(testTask.flatMap { it.binaryResultsDirectory })
-                }
-            }
+                if (aggregate) listOf(unitTestTaskOf(variant)!!.flatMap { it.binaryResultsDirectory }) else emptyList()
+            })
         }
     }
 
