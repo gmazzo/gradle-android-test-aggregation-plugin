@@ -2,7 +2,7 @@
 kotlin = "2.0.21"
 agp = "8.7.2"
 android-minSDK = "21"
-android-compileSDK = "34"
+android-compileSDK = "35"
 androidx-lifecycle = "2.8.7"
 androidx-navigation = "2.8.3"
 
