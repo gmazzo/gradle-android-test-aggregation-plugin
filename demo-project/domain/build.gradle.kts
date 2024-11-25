@@ -6,5 +6,5 @@ plugins {
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
 
 dependencies {
-    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test)
 }
