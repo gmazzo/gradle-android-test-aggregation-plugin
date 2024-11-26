@@ -10,6 +10,7 @@ import org.gradle.api.attributes.Usage
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Property
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 const val USAGE_TEST_AGGREGATION = "test-aggregation"
 
@@ -29,5 +30,5 @@ val BuildType.aggregateTestCoverage: Property<Boolean>
 val ProductFlavor.aggregateTestCoverage: Property<Boolean>
     get() = extensions.getByName<Property<Boolean>>(::aggregateTestCoverage.name)
 
-val KotlinTarget.aggregateTestCoverage: Property<Boolean>
+val KotlinJvmTarget.aggregateTestCoverage: Property<Boolean>
     get() = (this as ExtensionAware).extensions.getByName<Property<Boolean>>(::aggregateTestCoverage.name)
