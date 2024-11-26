@@ -14,7 +14,7 @@ android {
         minSdk = libs.versions.android.minSDK.get().toInt()
     }
 
-    targetProjectPath = projects.demoProject.app.dependencyProject.path
+    targetProjectPath = projects.demoProject.app.path
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

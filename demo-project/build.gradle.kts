@@ -49,7 +49,7 @@ tasks.jacocoAggregatedReport {
 }
 
 val reportsSpec = copySpec {
-    val tookRegEx = "\\b\\d+\\.\\d+s\\b".toRegex()
+    val tookRegEx = "\\b\\d+(?:\\.\\d+)?s\\b".toRegex()
 
     from(tasks.jacocoAggregatedReport) { include("**/*.csv") }
     from(tasks.testAggregatedReport) {

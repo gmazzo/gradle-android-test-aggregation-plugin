@@ -7,20 +7,17 @@ import com.android.build.gradle.BaseExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.testing.AbstractTestTask
-import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.aggregateTestCoverage
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.withType
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.testAggregation
 import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinTargetsContainer
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMetadataTarget
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 internal val Project.android
@@ -64,7 +61,7 @@ internal fun TestAggregationExtension.aggregateProject(project: Project, config:
             config.dependencies.add(project.dependencies.testAggregation(project))
 
 private fun TestAggregationExtension.Modules.includes(project: Project) =
-    (includes.get().isEmpty() || project in includes.get()) && project !in excludes.get()
+    (includes.get().isEmpty() || project.path in includes.get()) && project.path !in excludes.get()
 
 internal fun Project.unitTestTaskOf(variant: Variant) = (variant as? HasUnitTest)
     ?.unitTest
