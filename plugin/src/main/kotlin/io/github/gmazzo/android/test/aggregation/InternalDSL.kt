@@ -12,10 +12,16 @@ import org.gradle.kotlin.dsl.aggregateTestCoverage
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.withType
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.testAggregation
 import org.gradle.kotlin.dsl.the
+import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import org.jetbrains.kotlin.gradle.plugin.KotlinTargetsContainer
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMetadataTarget
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 internal val Project.android
     get() = the<BaseExtension>()
@@ -62,4 +68,12 @@ private fun TestAggregationExtension.Modules.includes(project: Project) =
 
 internal fun Project.unitTestTaskOf(variant: Variant) = (variant as? HasUnitTest)
     ?.unitTest
-    ?.let { tasks.named<AbstractTestTask>("test${it.name.capitalized()}") }
+    ?.let { tasks.named<AbstractTestTask>("test${it.name.replaceFirstChar { it.uppercase() }}") }
+
+internal fun Project.unitTestTaskOf(target: KotlinTarget) =
+    tasks.named<AbstractTestTask>("${(target.disambiguationClassifier ?: target.name)}Test")
+
+internal fun Project.onKotlinJVMTargets(action: KotlinJvmTarget.() -> Unit) = plugins.withId("kotlin-multiplatform") {
+    the<KotlinTargetsContainer>().targets
+        .withType<KotlinJvmTarget>(action)
+}

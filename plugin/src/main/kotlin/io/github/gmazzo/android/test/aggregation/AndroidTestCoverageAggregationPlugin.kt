@@ -17,8 +17,12 @@ import org.gradle.api.attributes.VerificationType
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.file.RegularFile
+import org.gradle.api.internal.provider.Providers
 import org.gradle.api.plugins.ExtensionAware
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Sync
+import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.kotlin.dsl.USAGE_TEST_AGGREGATION
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
@@ -31,7 +35,10 @@ import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.registering
 import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.invoke
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.Companion.MAIN_COMPILATION_NAME
 
 abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
 
@@ -55,7 +62,7 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             })
         }
 
-        configurations.create("codeCoverageExecutionData") {
+        val codeCoverageExecutionData by configurations.registering {
             isCanBeConsumed = true
             isCanBeResolved = false
             isVisible = false
@@ -73,10 +80,7 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             }
             afterEvaluate {
                 jacocoVariants.all variant@{
-                    val execData = unitTestTaskOf(this@variant)!!
-                        .map { it.the<JacocoTaskExtension>().destinationFile!! }
-
-                    outgoing.artifact(execData) {
+                    outgoing.artifact(unitTestTaskOf(this@variant)!!.execData) {
                         type = ArtifactTypeDefinition.BINARY_DATA_TYPE
                     }
                 }
@@ -154,6 +158,24 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
                 type = ArtifactTypeDefinition.JVM_CLASS_DIRECTORY
             }
         }
+
+        onKotlinJVMTargets variant@{
+            val main = compilations[MAIN_COMPILATION_NAME]
+
+            codeCoverageExecutionData.configure {
+                outgoing.artifact(unitTestTaskOf(this@variant).execData) {
+                    type = ArtifactTypeDefinition.BINARY_DATA_TYPE
+                }
+            }
+            allVariantsSourcesForCoverageReport.configure {
+                main.allKotlinSourceSets.forAll {
+                    from(it.kotlin.srcDirs)
+                }
+            }
+            allVariantsClassesForCoverageReport.configure {
+                from(main.output.classesDirs)
+            }
+        }
     }
 
     private fun Project.addRobolectricTestsSupport() {
@@ -177,5 +199,8 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             }
         }
     }
+
+    private val TaskProvider<AbstractTestTask>.execData
+        get() = map { it.the<JacocoTaskExtension>().destinationFile!! }
 
 }

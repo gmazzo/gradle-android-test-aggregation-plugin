@@ -48,12 +48,14 @@ dependencies {
 
     compileOnly(gradleKotlinDsl())
     compileOnly(plugin(libs.plugins.android))
+    compileOnly(plugin(libs.plugins.kotlin.multiplatform))
 
     testImplementation(gradleKotlinDsl())
     testImplementation(plugin(libs.plugins.android))
+    testImplementation(plugin(libs.plugins.kotlin.multiplatform))
 }
 
-testing.suites.withType<JvmTestSuite>() {
+testing.suites.withType<JvmTestSuite> {
     useKotlinTest(libs.versions.kotlin)
 }
 

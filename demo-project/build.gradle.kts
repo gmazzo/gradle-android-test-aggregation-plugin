@@ -6,7 +6,12 @@ plugins {
 
 testAggregation {
     modules {
-        include(projects.demoProject.app, projects.demoProject.domain, projects.demoProject.login)
+        include(
+            projects.demoProject.app,
+            projects.demoProject.domain,
+            projects.demoProject.login,
+            projects.demoProject.kmp,
+        )
         exclude(rootProject)
     }
     coverage {

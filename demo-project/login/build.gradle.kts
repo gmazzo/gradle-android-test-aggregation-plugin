@@ -43,7 +43,7 @@ dependencies {
     implementation(libs.androidx.livedata)
     implementation(libs.androidx.viewmodel)
 
-    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test)
 
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.androidx.test.espresso)
