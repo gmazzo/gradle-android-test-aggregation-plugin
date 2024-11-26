@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 plugins {
     alias(libs.plugins.android.lib)
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.ksp)
 }
 
 afterEvaluate {
@@ -30,5 +31,8 @@ kotlin {
 }
 
 dependencies {
+    ksp(libs.moshi.codegen)
+    "androidMainImplementation"(libs.moshi.kotlin)
+    "jvmMainImplementation"(libs.moshi.kotlin)
     commonTestImplementation(libs.kotlin.test)
 }

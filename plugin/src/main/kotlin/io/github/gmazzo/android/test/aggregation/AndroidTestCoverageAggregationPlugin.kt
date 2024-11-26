@@ -169,7 +169,7 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             }
             allVariantsSourcesForCoverageReport.configure {
                 main.allKotlinSourceSets.forAll {
-                    from(it.kotlin.srcDirs)
+                    from(it.kotlin)
                 }
             }
             allVariantsClassesForCoverageReport.configure {
