@@ -49,20 +49,29 @@ tasks.jacocoAggregatedReport {
 }
 
 val reportsSpec = copySpec {
-    includeEmptyDirs = false
+    val tookRegEx = "\\b\\d+\\.\\d+s\\b".toRegex()
+
     from(tasks.jacocoAggregatedReport) { include("**/*.csv") }
     from(tasks.testAggregatedReport) {
         into("tests")
-        filter { if (it.startsWith("<a href=\"http://www.gradle.org\">")) "" else it }
+        filter {
+            when {
+                it.startsWith("<a href=\"http://www.gradle.org\">") -> ""
+                else -> it.replace(tookRegEx, "0.100s")
+            }
+        }
     }
+    includeEmptyDirs = false
 }
 
 tasks.register<Sync>("collectExpectedReports") {
+    outputs.upToDateWhen { false }
     with(reportsSpec)
     into(aggregatedReportsSpecs)
 }
 
 val checkAggregatedReportsContent by tasks.registering(Sync::class) {
+    outputs.upToDateWhen { false }
     with(reportsSpec) { into("actual") }
     into(temporaryDir)
     doLast {
