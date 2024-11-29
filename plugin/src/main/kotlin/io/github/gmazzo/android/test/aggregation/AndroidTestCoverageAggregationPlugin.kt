@@ -6,6 +6,7 @@ import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.variant.HasUnitTest
 import com.android.build.api.variant.ScopedArtifacts
 import com.android.build.api.variant.Variant
+import com.android.build.gradle.tasks.factory.AndroidUnitTest
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.type.ArtifactTypeDefinition
@@ -17,9 +18,7 @@ import org.gradle.api.attributes.VerificationType
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.file.RegularFile
-import org.gradle.api.internal.provider.Providers
 import org.gradle.api.plugins.ExtensionAware
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Sync
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.testing.AbstractTestTask
@@ -35,9 +34,7 @@ import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.registering
 import org.gradle.kotlin.dsl.the
-import org.gradle.kotlin.dsl.invoke
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.Companion.MAIN_COMPILATION_NAME
 
 abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
@@ -201,6 +198,11 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
     }
 
     private val TaskProvider<AbstractTestTask>.execData
-        get() = map { it.the<JacocoTaskExtension>().destinationFile!! }
+        get() = map {
+            when (it) {
+                is AndroidUnitTest -> it.jacocoCoverageOutputFile
+                else -> it.the<JacocoTaskExtension>().destinationFile
+            }
+        }
 
 }

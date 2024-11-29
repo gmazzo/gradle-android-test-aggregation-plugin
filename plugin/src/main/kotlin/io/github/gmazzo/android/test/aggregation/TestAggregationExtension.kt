@@ -19,31 +19,37 @@ abstract class TestAggregationExtension {
      */
     abstract class Modules {
 
-        abstract val includes: SetProperty<Project>
+        /**
+         * List of [Project.getPath] that should be included in the aggregation. If empty, all projects are included
+         */
+        abstract val includes: SetProperty<String>
 
-        abstract val excludes: SetProperty<Project>
+        /**
+         * List of [Project.getPath] that should be excluded from the aggregation
+         */
+        abstract val excludes: SetProperty<String>
 
         fun include(vararg includes: Project) = apply {
-            this.includes.addAll(*includes)
+            this.includes.addAll(includes.map { it.path })
         }
 
         fun include(includes: Iterable<Project>) = apply {
-            this.includes.addAll(includes)
+            this.includes.addAll(includes.map { it.path })
         }
 
         fun include(vararg includes: ProjectDependency) =
-            include(includes.map { it.dependencyProject })
+            this.includes.addAll(includes.map { it.path })
 
         fun exclude(vararg excludes: Project) = apply {
-            this.excludes.addAll(*excludes)
+            this.excludes.addAll(excludes.map { it.path })
         }
 
         fun exclude(excludes: Iterable<Project>) = apply {
-            this.excludes.addAll(excludes)
+            this.excludes.addAll(excludes.map { it.path })
         }
 
         fun exclude(vararg excludes: ProjectDependency) =
-            exclude(excludes.map { it.dependencyProject })
+            this.excludes.addAll(excludes.map { it.path })
 
     }
 

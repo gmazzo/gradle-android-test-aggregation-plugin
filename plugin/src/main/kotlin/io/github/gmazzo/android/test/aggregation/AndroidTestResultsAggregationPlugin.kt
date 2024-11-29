@@ -3,7 +3,6 @@ package io.github.gmazzo.android.test.aggregation
 import com.android.build.api.variant.HasUnitTest
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.TestSuiteType
 import org.gradle.api.attributes.Usage
