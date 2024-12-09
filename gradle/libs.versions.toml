@@ -5,7 +5,7 @@ android-minSDK = "21"
 android-compileSDK = "35"
 androidx-lifecycle = "2.8.7"
 androidx-navigation = "2.8.4"
-moshi = "1.15.1"
+moshi = "1.15.2"
 
 [libraries]
 androidx-core = "androidx.core:core-ktx:1.15.0"
