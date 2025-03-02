@@ -9,19 +9,6 @@ A couple of Gradle plugins to make Android modules work with
 [JaCoCo Report Aggregation Plugin](https://docs.gradle.org/current/userguide/jacoco_report_aggregation_plugin.html) and
 [Test Report Aggregation Plugin](https://docs.gradle.org/current/userguide/test_report_aggregation_plugin.html)
 
-> [!NOTE]
-> Since the arrival of [`Kover 0.8.0-Beta2`](https://github.com/Kotlin/kotlinx-kover/releases/tag/v0.8.0-Beta2), this project loses momentum,
-> as test aggregation of JVM/Kotlin/Android mono-repos is supported out of the box, providing a much better coverage experience than JaCoCo
-> 
-> ```kotlin
-> plugins {
->     id("org.jetbrains.kotlinx.kover") version "0.8.0-Beta2"
-> }
-> 
-> subprojects { apply(plugin = "org.jetbrains.kotlinx.kover") }
-> kover.merge { allProjects() }
->```
-
 # Usage
 Apply the plugin at the **root** project:
 ```kotlin
