@@ -16,6 +16,7 @@ import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.testAggregation
 import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
+import org.gradle.util.GradleVersion
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinTargetsContainer
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
@@ -32,6 +33,12 @@ internal val Project.testAggregationExtension: TestAggregationExtension
             modules.includes.finalizeValueOnRead()
             modules.excludes.finalizeValueOnRead()
         }
+
+internal fun Project.ensureMinGradleVersion() {
+    if (GradleVersion.current() < GradleVersion.version("8.13")) {
+        error("This plugin requires Gradle 8.13 or later")
+    }
+}
 
 internal fun Project.ensureItsNotJava() = plugins.withId("java-base") {
     error("This plugin can not work with `java` plugin as well. It's recommended to apply it at the root project with at most the `base` plugin")

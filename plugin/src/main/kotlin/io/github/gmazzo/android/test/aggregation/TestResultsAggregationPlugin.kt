@@ -2,8 +2,8 @@ package io.github.gmazzo.android.test.aggregation
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.attributes.TestSuiteType
 import org.gradle.api.reporting.ReportingExtension
+import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.testing.AggregateTestReport
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.create
@@ -15,6 +15,7 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
 class TestResultsAggregationPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {
+        ensureMinGradleVersion()
         ensureItsNotJava()
 
         apply(plugin = "reporting-base")
@@ -24,7 +25,7 @@ class TestResultsAggregationPlugin : Plugin<Project> {
 
         val testResultsReport =
             the<ReportingExtension>().reports.create<AggregateTestReport>("testAggregatedReport") {
-                testType.set(TestSuiteType.UNIT_TEST)
+                testSuiteName.set(SourceSet.TEST_SOURCE_SET_NAME)
             }
 
         val testReportAggregation by configurations

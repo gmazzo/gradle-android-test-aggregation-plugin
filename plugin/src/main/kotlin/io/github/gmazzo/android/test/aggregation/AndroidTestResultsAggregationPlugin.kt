@@ -4,9 +4,10 @@ import com.android.build.api.variant.HasUnitTest
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.attributes.Category
-import org.gradle.api.attributes.TestSuiteType
+import org.gradle.api.attributes.TestSuiteName
 import org.gradle.api.attributes.Usage
 import org.gradle.api.attributes.VerificationType
+import org.gradle.api.tasks.SourceSet
 import org.gradle.kotlin.dsl.USAGE_TEST_AGGREGATION
 import org.gradle.kotlin.dsl.aggregateTestCoverage
 import org.gradle.kotlin.dsl.apply
@@ -25,8 +26,8 @@ abstract class AndroidTestResultsAggregationPlugin : Plugin<Project> {
                 attribute(Usage.USAGE_ATTRIBUTE, objects.named(USAGE_TEST_AGGREGATION))
                 attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.VERIFICATION))
                 attribute(
-                    TestSuiteType.TEST_SUITE_TYPE_ATTRIBUTE,
-                    objects.named(TestSuiteType.UNIT_TEST)
+                    TestSuiteName.TEST_SUITE_NAME_ATTRIBUTE,
+                    objects.named(SourceSet.TEST_SOURCE_SET_NAME)
                 )
                 attribute(
                     VerificationType.VERIFICATION_TYPE_ATTRIBUTE,
