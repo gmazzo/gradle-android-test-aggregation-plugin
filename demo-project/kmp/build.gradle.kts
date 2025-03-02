@@ -12,7 +12,7 @@ afterEvaluate {
     rootProject.the<YarnRootExtension>().download = false
 }
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
 
 android {
     namespace = "com.example.login"

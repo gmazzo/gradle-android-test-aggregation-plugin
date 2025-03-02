@@ -4,8 +4,10 @@ import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.HasUnitTest
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.tasks.factory.AndroidUnitTest
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.kotlin.dsl.aggregateTestCoverage
 import org.gradle.kotlin.dsl.create
@@ -15,11 +17,9 @@ import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.testAggregation
 import org.gradle.kotlin.dsl.the
-import org.gradle.kotlin.dsl.withType
+import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.gradle.util.GradleVersion
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
-import org.jetbrains.kotlin.gradle.plugin.KotlinTargetsContainer
-import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 internal val Project.android
     get() = the<BaseExtension>()
@@ -77,7 +77,10 @@ internal fun Project.unitTestTaskOf(variant: Variant) = (variant as? HasUnitTest
 internal fun Project.unitTestTaskOf(target: KotlinTarget) =
     tasks.named<AbstractTestTask>("${(target.disambiguationClassifier ?: target.name)}Test")
 
-internal fun Project.onKotlinJVMTargets(action: KotlinJvmTarget.() -> Unit) = plugins.withId("kotlin-multiplatform") {
-    the<KotlinTargetsContainer>().targets
-        .withType<KotlinJvmTarget>(action)
-}
+internal val TaskProvider<AbstractTestTask>.execData
+    get() = map {
+        when (it) {
+            is AndroidUnitTest -> it.jacocoCoverageOutputFile
+            else -> it.the<JacocoTaskExtension>().destinationFile
+        }
+    }
