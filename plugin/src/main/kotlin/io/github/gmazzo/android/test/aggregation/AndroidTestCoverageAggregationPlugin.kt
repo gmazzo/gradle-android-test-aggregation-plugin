@@ -12,13 +12,14 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.type.ArtifactTypeDefinition
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.LibraryElements
-import org.gradle.api.attributes.TestSuiteType
+import org.gradle.api.attributes.TestSuiteName
 import org.gradle.api.attributes.Usage
 import org.gradle.api.attributes.VerificationType
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.file.RegularFile
 import org.gradle.api.plugins.ExtensionAware
+import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.Sync
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.testing.AbstractTestTask
@@ -67,8 +68,8 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
                 attribute(Usage.USAGE_ATTRIBUTE, objects.named(USAGE_TEST_AGGREGATION))
                 attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.VERIFICATION))
                 attribute(
-                    TestSuiteType.TEST_SUITE_TYPE_ATTRIBUTE,
-                    objects.named(TestSuiteType.UNIT_TEST)
+                    TestSuiteName.TEST_SUITE_NAME_ATTRIBUTE,
+                    objects.named(SourceSet.TEST_SOURCE_SET_NAME)
                 )
                 attribute(
                     VerificationType.VERIFICATION_TYPE_ATTRIBUTE,
@@ -100,8 +101,8 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
                 attribute(Usage.USAGE_ATTRIBUTE, objects.named(USAGE_TEST_AGGREGATION))
                 attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.VERIFICATION))
                 attribute(
-                    TestSuiteType.TEST_SUITE_TYPE_ATTRIBUTE,
-                    objects.named(TestSuiteType.UNIT_TEST)
+                    TestSuiteName.TEST_SUITE_NAME_ATTRIBUTE,
+                    objects.named(SourceSet.TEST_SOURCE_SET_NAME)
                 )
                 attribute(
                     VerificationType.VERIFICATION_TYPE_ATTRIBUTE,
