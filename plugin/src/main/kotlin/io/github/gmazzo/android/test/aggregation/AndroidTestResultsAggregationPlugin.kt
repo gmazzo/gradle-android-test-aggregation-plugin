@@ -3,6 +3,7 @@ package io.github.gmazzo.android.test.aggregation
 import com.android.build.api.variant.HasUnitTest
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.TestSuiteName
 import org.gradle.api.attributes.Usage
@@ -12,6 +13,7 @@ import org.gradle.kotlin.dsl.USAGE_TEST_AGGREGATION
 import org.gradle.kotlin.dsl.aggregateTestCoverage
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.named
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 abstract class AndroidTestResultsAggregationPlugin : Plugin<Project> {
 
@@ -38,19 +40,30 @@ abstract class AndroidTestResultsAggregationPlugin : Plugin<Project> {
 
         androidComponents.onVariants { variant ->
             testResultsElements.outgoing.artifacts(provider {
-                val aggregate = (variant as? HasUnitTest)?.unitTest != null && android.shouldAggregate(variant)
+                val aggregate =
+                    (variant as? HasUnitTest)?.unitTest != null && android.shouldAggregate(variant)
 
                 if (aggregate) listOf(unitTestTaskOf(variant)!!.flatMap { it.binaryResultsDirectory }) else emptyList()
             })
         }
 
-        onKotlinJVMTargets target@{
-            testResultsElements.outgoing.artifacts(provider {
-                val aggregate = this@target.aggregateTestCoverage.getOrElse(true)
+        plugins.withId("kotlin-multiplatform") {
+            with(KMPSupport(testResultsElements)) { configure() }
+        }
+    }
 
-                if (aggregate) listOf(unitTestTaskOf(this@target).flatMap { it.binaryResultsDirectory }) else emptyList()
+    internal class KMPSupport(
+        private val testResultsElements: Configuration,
+    ) : AndroidTestBaseAggregationPlugin.KMPSupport() {
+
+        override fun Project.configureTarget(target: KotlinJvmTarget) {
+            testResultsElements.outgoing.artifacts(provider {
+                val aggregate = target.aggregateTestCoverage.getOrElse(true)
+
+                if (aggregate) listOf(unitTestTaskOf(target).flatMap { it.binaryResultsDirectory }) else emptyList()
             })
         }
+
     }
 
 }

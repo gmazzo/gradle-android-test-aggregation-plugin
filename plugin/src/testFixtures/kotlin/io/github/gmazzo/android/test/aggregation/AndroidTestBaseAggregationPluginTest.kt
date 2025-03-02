@@ -3,12 +3,12 @@ package io.github.gmazzo.android.test.aggregation
 import org.gradle.kotlin.dsl.apply
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Test
-import kotlin.test.assertNotNull
+import org.junit.jupiter.api.assertNotNull
 
 abstract class AndroidTestBaseAggregationPluginTest(
     private val pluginId: String,
     private val expectedTask: String,
-    ) {
+) {
 
     private val root = ProjectBuilder.builder()
         .withName("root")

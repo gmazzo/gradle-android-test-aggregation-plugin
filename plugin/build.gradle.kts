@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.kotlin.samReceiver)
     alias(libs.plugins.gradle.pluginPublish)
     alias(libs.plugins.publicationsReport)
+    `jacoco-report-aggregation`
+    `java-test-fixtures`
     jacoco
 }
 
@@ -14,7 +16,8 @@ version = providers
     .exec { commandLine("git", "describe", "--tags", "--always") }
     .standardOutput.asText.get().trim().removePrefix("v")
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
+testing.suites.create<JvmTestSuite>("kotlinTest")
 
 gradlePlugin {
     website.set("https://github.com/gmazzo/gradle-android-test-aggregation-plugin")
@@ -50,22 +53,32 @@ dependencies {
     compileOnly(plugin(libs.plugins.android))
     compileOnly(plugin(libs.plugins.kotlin.multiplatform))
 
-    testImplementation(gradleKotlinDsl())
-    testImplementation(plugin(libs.plugins.android))
-    testImplementation(plugin(libs.plugins.kotlin.multiplatform))
+    testFixturesApi(platform(libs.junit.bom))
+    testFixturesApi(libs.junit.params)
+
+    testFixturesImplementation(gradleKotlinDsl())
+    testFixturesImplementation(plugin(libs.plugins.android))
+
+    "kotlinTestImplementation"(testFixtures(project))
+    "kotlinTestImplementation"(plugin(libs.plugins.kotlin.multiplatform))
 }
 
 testing.suites.withType<JvmTestSuite> {
-    useKotlinTest(libs.versions.kotlin)
+    useJUnitJupiter()
 }
 
-tasks.test {
-    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(17) }
-    finalizedBy(tasks.jacocoTestReport)
+tasks.withType<Test>().configureEach {
+    val testFixtures by sourceSets
+
+    testClassesDirs += testFixtures.output.classesDirs
 }
 
-tasks.jacocoTestReport {
+tasks.withType<JacocoReport>().configureEach {
     reports.xml.required = true
+}
+
+tasks.check {
+    dependsOn(tasks.withType<JacocoReport>())
 }
 
 tasks.publish {

@@ -6,9 +6,9 @@ import com.android.build.api.artifact.ScopedArtifact
 import com.android.build.api.variant.HasUnitTest
 import com.android.build.api.variant.ScopedArtifacts
 import com.android.build.api.variant.Variant
-import com.android.build.gradle.tasks.factory.AndroidUnitTest
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.type.ArtifactTypeDefinition
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.LibraryElements
@@ -22,7 +22,6 @@ import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.Sync
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.kotlin.dsl.USAGE_TEST_AGGREGATION
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
@@ -34,9 +33,9 @@ import org.gradle.kotlin.dsl.namedDomainObjectSet
 import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.registering
-import org.gradle.kotlin.dsl.the
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.Companion.MAIN_COMPILATION_NAME
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
 
@@ -157,22 +156,14 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             }
         }
 
-        onKotlinJVMTargets variant@{
-            val main = compilations[MAIN_COMPILATION_NAME]
-
-            codeCoverageExecutionData.configure {
-                outgoing.artifact(unitTestTaskOf(this@variant).execData) {
-                    type = ArtifactTypeDefinition.BINARY_DATA_TYPE
-                }
-            }
-            allVariantsSourcesForCoverageReport.configure {
-                main.allKotlinSourceSets.forAll {
-                    from(it.kotlin)
-                }
-            }
-            allVariantsClassesForCoverageReport.configure {
-                from(main.output.classesDirs)
-            }
+        plugins.withId("kotlin-multiplatform") {
+            with(
+                KMPSupport(
+                    codeCoverageExecutionData.get(),
+                    allVariantsSourcesForCoverageReport,
+                    allVariantsClassesForCoverageReport,
+                )
+            ) { configure() }
         }
     }
 
@@ -198,12 +189,28 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
         }
     }
 
-    private val TaskProvider<AbstractTestTask>.execData
-        get() = map {
-            when (it) {
-                is AndroidUnitTest -> it.jacocoCoverageOutputFile
-                else -> it.the<JacocoTaskExtension>().destinationFile
+    internal class KMPSupport(
+        private val codeCoverageExecutionData: Configuration,
+        private val allVariantsSourcesForCoverageReport: TaskProvider<Sync>,
+        private val allVariantsClassesForCoverageReport: TaskProvider<Sync>,
+    ) : AndroidTestBaseAggregationPlugin.KMPSupport() {
+
+        override fun Project.configureTarget(target: KotlinJvmTarget) {
+            val main = target.compilations[MAIN_COMPILATION_NAME]
+
+            codeCoverageExecutionData.outgoing.artifact(unitTestTaskOf(target).execData) {
+                type = ArtifactTypeDefinition.BINARY_DATA_TYPE
+            }
+            allVariantsSourcesForCoverageReport.configure {
+                main.allKotlinSourceSets.forAll {
+                    from(it.kotlin)
+                }
+            }
+            allVariantsClassesForCoverageReport.configure {
+                from(main.output.classesDirs)
             }
         }
+
+    }
 
 }
