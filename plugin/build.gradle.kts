@@ -5,9 +5,9 @@ plugins {
     alias(libs.plugins.kotlin.samReceiver)
     alias(libs.plugins.gradle.pluginPublish)
     alias(libs.plugins.publicationsReport)
+    alias(libs.plugins.jacoco.testkit)
     `jacoco-report-aggregation`
     `java-test-fixtures`
-    jacoco
 }
 
 group = "io.github.gmazzo.test.aggregation"
@@ -42,6 +42,8 @@ gradlePlugin {
 
 samWithReceiver.annotation(HasImplicitReceiver::class.qualifiedName!!)
 
+val pluginExtraClasspath by configurations.creating
+
 dependencies {
     fun DependencyHandler.plugin(dependency: Provider<PluginDependency>) =
         dependency.get().run { create("$pluginId:$pluginId.gradle.plugin:$version") }
@@ -57,7 +59,10 @@ dependencies {
     testFixturesApi(libs.junit.params)
 
     testFixturesImplementation(gradleKotlinDsl())
+    testFixturesImplementation(gradleTestKit())
     testFixturesImplementation(plugin(libs.plugins.android))
+
+    pluginExtraClasspath(plugin(libs.plugins.android))
 
     "kotlinTestImplementation"(testFixtures(project))
     "kotlinTestImplementation"(plugin(libs.plugins.kotlin.multiplatform))
@@ -71,6 +76,7 @@ tasks.withType<Test>().configureEach {
     val testFixtures by sourceSets
 
     testClassesDirs += testFixtures.output.classesDirs
+    environment("TEMP_DIR", temporaryDir)
 }
 
 tasks.withType<JacocoReport>().configureEach {
@@ -79,6 +85,10 @@ tasks.withType<JacocoReport>().configureEach {
 
 tasks.check {
     dependsOn(tasks.withType<JacocoReport>())
+}
+
+tasks.pluginUnderTestMetadata {
+    pluginClasspath.from(pluginExtraClasspath)
 }
 
 tasks.publish {

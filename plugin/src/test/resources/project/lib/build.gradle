@@ -1,0 +1,11 @@
+plugins {
+    id("com.android.library")
+}
+
+android {
+    namespace = "org.test.lib"
+
+    compileSdk = 34
+
+    buildTypes.debug.enableUnitTestCoverage = true
+}

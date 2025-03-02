@@ -1,5 +1,3 @@
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -7,10 +5,17 @@ pluginManagement {
     }
 }
 
+plugins {
+    id("jacoco-testkit-coverage")
+}
+
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         mavenCentral()
         google()
     }
 }
+
+rootProject.name = "testProject"
+
+include("app", "lib", "utils")
