@@ -12,14 +12,12 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.type.ArtifactTypeDefinition
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.LibraryElements
-import org.gradle.api.attributes.TestSuiteName
 import org.gradle.api.attributes.Usage
 import org.gradle.api.attributes.VerificationType
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.file.RegularFile
 import org.gradle.api.plugins.ExtensionAware
-import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.Sync
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.USAGE_TEST_AGGREGATION
@@ -48,7 +46,7 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
 
         val jacocoVariants = objects.namedDomainObjectSet(Variant::class)
 
-        androidComponents.onVariants { variant ->
+        androidComponents.onVariants(androidComponents.selector().all()) { variant ->
             jacocoVariants.addAllLater(provider {
                 val buildType = android.buildTypes[variant.buildType!!]
                 val aggregate = (variant as? HasUnitTest)?.unitTest != null &&
@@ -66,10 +64,7 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             attributes {
                 attribute(Usage.USAGE_ATTRIBUTE, objects.named(USAGE_TEST_AGGREGATION))
                 attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.VERIFICATION))
-                attribute(
-                    TestSuiteName.TEST_SUITE_NAME_ATTRIBUTE,
-                    objects.named(SourceSet.TEST_SOURCE_SET_NAME)
-                )
+                with(GradleAPIAdapter) { setDefaultTestSuite(objects) }
                 attribute(
                     VerificationType.VERIFICATION_TYPE_ATTRIBUTE,
                     objects.named(VerificationType.JACOCO_RESULTS)
@@ -99,10 +94,7 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             attributes {
                 attribute(Usage.USAGE_ATTRIBUTE, objects.named(USAGE_TEST_AGGREGATION))
                 attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.VERIFICATION))
-                attribute(
-                    TestSuiteName.TEST_SUITE_NAME_ATTRIBUTE,
-                    objects.named(SourceSet.TEST_SOURCE_SET_NAME)
-                )
+                with(GradleAPIAdapter) { setDefaultTestSuite(objects) }
                 attribute(
                     VerificationType.VERIFICATION_TYPE_ATTRIBUTE,
                     objects.named(VerificationType.MAIN_SOURCES)

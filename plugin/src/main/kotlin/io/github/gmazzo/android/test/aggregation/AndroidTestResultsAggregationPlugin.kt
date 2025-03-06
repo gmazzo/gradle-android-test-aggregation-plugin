@@ -38,7 +38,7 @@ abstract class AndroidTestResultsAggregationPlugin : Plugin<Project> {
             }
         }
 
-        androidComponents.onVariants { variant ->
+        androidComponents.onVariants(androidComponents.selector().all()) { variant ->
             testResultsElements.outgoing.artifacts(provider {
                 val aggregate =
                     (variant as? HasUnitTest)?.unitTest != null && android.shouldAggregate(variant)

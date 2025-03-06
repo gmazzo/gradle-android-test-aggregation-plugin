@@ -1,10 +1,13 @@
 package io.github.gmazzo.android.test.aggregation
 
+import com.android.build.api.AndroidPluginVersion
+import com.android.build.api.extension.impl.CurrentAndroidGradlePluginVersion
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.HasUnitTest
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.tasks.factory.AndroidUnitTest
+import com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.TaskProvider
@@ -34,11 +37,28 @@ internal val Project.testAggregationExtension: TestAggregationExtension
             modules.excludes.finalizeValueOnRead()
         }
 
-internal fun Project.ensureMinGradleVersion() {
-    if (GradleVersion.current() < GradleVersion.version("8.13")) {
-        error("This plugin requires Gradle 8.13 or later")
+internal fun Project.ensureMinVersions() {
+    if (GradleVersion.current() < BuildConfig.MIN_GRADLE_VERSION) {
+        error("This plugin requires Gradle ${BuildConfig.MIN_GRADLE_VERSION}} or later. Current is ${GradleVersion.current()}")
+    }
+    if (agpVersion < BuildConfig.MIN_AGP_VERSION) {
+        error("This plugin requires Gradle ${BuildConfig.MIN_AGP_VERSION} or later. Current is $agpVersion")
     }
 }
+
+private val agpVersion
+    get() = runCatching {
+        val (major, minor, patch) = ANDROID_GRADLE_PLUGIN_VERSION.split('.').map { it.toInt() }
+
+        AndroidPluginVersion(major, minor, patch)
+    }.getOrElse {
+        runCatching { CurrentAndroidGradlePluginVersion.CURRENT_AGP_VERSION }.getOrElse {
+            throw IllegalStateException(
+                "Android Plugin is too old or it was not applied (or loaded in the same project than this one). This plugin requires Gradle ${BuildConfig.MIN_AGP_VERSION} or later",
+                it
+            )
+        }
+    }
 
 internal fun Project.ensureItsNotJava() = plugins.withId("java-base") {
     error("This plugin can not work with `java` plugin as well. It's recommended to apply it at the root project with at most the `base` plugin")
@@ -63,12 +83,16 @@ internal fun BaseExtension.shouldAggregate(variant: Variant) =
         .mapNotNull { it.orNull }
         .reduceOrNull { acc, aggregate -> acc || aggregate } != false
 
-internal fun TestAggregationExtension.aggregateProject(project: Project, config: Configuration) =
+internal fun TestAggregationExtension.aggregateProject(
+    project: Project,
+    config: Configuration
+) =
     modules.includes(project) &&
             config.dependencies.add(project.dependencies.testAggregation(project))
 
 private fun TestAggregationExtension.Modules.includes(project: Project) =
-    (includes.get().isEmpty() || project.path in includes.get()) && project.path !in excludes.get()
+    (includes.get()
+        .isEmpty() || project.path in includes.get()) && project.path !in excludes.get()
 
 internal fun Project.unitTestTaskOf(variant: Variant) = (variant as? HasUnitTest)
     ?.unitTest

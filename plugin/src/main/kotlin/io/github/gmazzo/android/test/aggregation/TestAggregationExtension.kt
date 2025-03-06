@@ -37,8 +37,9 @@ abstract class TestAggregationExtension {
             this.includes.addAll(includes.map { it.path })
         }
 
-        fun include(vararg includes: ProjectDependency) =
-            this.includes.addAll(includes.map { it.path })
+        fun include(vararg includes: ProjectDependency) = with(GradleAPIAdapter) {
+            this@Modules.includes.addAll(includes.map { it.projectPath })
+        }
 
         fun exclude(vararg excludes: Project) = apply {
             this.excludes.addAll(excludes.map { it.path })
@@ -48,8 +49,9 @@ abstract class TestAggregationExtension {
             this.excludes.addAll(excludes.map { it.path })
         }
 
-        fun exclude(vararg excludes: ProjectDependency) =
-            this.excludes.addAll(excludes.map { it.path })
+        fun exclude(vararg excludes: ProjectDependency) = with(GradleAPIAdapter) {
+            this@Modules.excludes.addAll(excludes.map { it.projectPath })
+        }
 
     }
 
