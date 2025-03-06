@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package io.github.gmazzo.android.test.aggregation
 
 import com.android.build.api.AndroidPluginVersion
