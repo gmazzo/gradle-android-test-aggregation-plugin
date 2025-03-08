@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.publicationsReport)
     `jacoco-report-aggregation`
     `java-test-fixtures`
+    signing
 }
 
 group = "io.github.gmazzo.test.aggregation"
@@ -101,13 +102,29 @@ dependencies {
     "kotlinTestImplementation"(plugin(libs.plugins.kotlin.multiplatform))
 }
 
+signing {
+    val signingKey: String? by project
+    val signingPassword: String? by project
+
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    publishing.publications.configureEach(::sign)
+    tasks.withType<Sign>().configureEach { enabled = signingKey != null }
+}
+
 testing.suites.withType<JvmTestSuite> {
     useJUnitJupiter()
 }
 
-tasks.withType<Test>().configureEach {
-    val testFixtures by sourceSets
+val testFixtures by sourceSets
 
+components.named<AdhocComponentWithVariants>("java") {
+    sequenceOf(
+        testFixtures.apiElementsConfigurationName,
+        testFixtures.runtimeElementsConfigurationName,
+    ).forEach { withVariantsFromConfiguration(configurations.getByName(it)) { skip() } }
+}
+
+tasks.withType<Test>().configureEach {
     testClassesDirs += testFixtures.output.classesDirs
     environment("TEMP_DIR", temporaryDir)
 }
