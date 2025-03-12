@@ -1,6 +1,7 @@
 ![GitHub](https://img.shields.io/github/license/gmazzo/gradle-android-test-aggregation-plugin)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.gmazzo.test.aggregation.coverage/io.github.gmazzo.test.aggregation.coverage.gradle.plugin)](https://central.sonatype.com/artifact/io.github.gmazzo.test.aggregation.coverage/io.github.gmazzo.test.aggregation.coverage.gradle.plugin)
 [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/io.github.gmazzo.test.aggregation.coverage)](https://plugins.gradle.org/plugin/io.github.gmazzo.test.aggregation.coverage)
-[![Build Status](https://github.com/gmazzo/gradle-android-test-aggregation-plugin/actions/workflows/build.yaml/badge.svg)](https://github.com/gmazzo/gradle-android-test-aggregation-plugin/actions/workflows/build.yaml)
+[![Build Status](https://github.com/gmazzo/gradle-android-test-aggregation-plugin/actions/workflows/ci-cd.yaml/badge.svg)](https://github.com/gmazzo/gradle-android-test-aggregation-plugin/actions/workflows/ci-cd.yaml)
 [![Coverage](https://codecov.io/gh/gmazzo/gradle-android-test-aggregation-plugin/branch/main/graph/badge.svg?token=D5cDiPWvcS)](https://codecov.io/gh/gmazzo/gradle-android-test-aggregation-plugin)
 [![Users](https://img.shields.io/badge/users_by-Sourcegraph-purple)](https://sourcegraph.com/search?q=content:io.github.gmazzo.test.aggregation+-repo:github.com/gmazzo/gradle-android-test-aggregation-plugin)
 
