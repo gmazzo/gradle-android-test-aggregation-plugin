@@ -6,20 +6,21 @@ plugins {
     alias(libs.plugins.buildconfig)
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.samReceiver)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.axion.release)
+    alias(libs.plugins.mavenPublish)
     alias(libs.plugins.gradle.multiapi)
     alias(libs.plugins.gradle.pluginPublish)
     alias(libs.plugins.gradle.testkit.jacoco)
     alias(libs.plugins.publicationsReport)
     `jacoco-report-aggregation`
     `java-test-fixtures`
-    signing
 }
 
 group = "io.github.gmazzo.test.aggregation"
 description = "Test Aggregation Plugin for Android"
-version = providers
-    .exec { commandLine("git", "describe", "--tags", "--always") }
-    .standardOutput.asText.get().trim().removePrefix("v")
+scmVersion.repository.directory.set(rootDir.parentFile.absolutePath)
+version = scmVersion.version
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
 samWithReceiver.annotation(HasImplicitReceiver::class.qualifiedName!!)
@@ -40,9 +41,13 @@ buildConfig {
     )
 }
 
+val originUrl = providers
+    .exec { commandLine("git", "remote", "get-url", "origin") }
+    .standardOutput.asText.map { it.trim() }
+
 gradlePlugin {
-    website.set("https://github.com/gmazzo/gradle-android-test-aggregation-plugin")
-    vcsUrl.set("https://github.com/gmazzo/gradle-android-test-aggregation-plugin")
+    vcsUrl = originUrl
+    website = originUrl
 
     apiTargets(minGradleVersion, "8.13")
 
@@ -70,6 +75,38 @@ gradlePlugin {
             "io.github.gmazzo.android.test.aggregation.TestResultsAggregationPlugin"
         description = "Test results aggregation support for Android/JVM modules"
         tags.addAll("android", "agp", "test", "aggregation", "test-report-aggregation")
+    }
+}
+
+mavenPublishing {
+    signAllPublications()
+    publishToMavenCentral("CENTRAL_PORTAL", automaticRelease = true)
+
+    pom {
+        name = "${rootProject.name}-${project.name}"
+        description = provider { project.description }
+        url = originUrl
+
+        licenses {
+            license {
+                name = "MIT License"
+                url = "https://opensource.org/license/mit/"
+            }
+        }
+
+        developers {
+            developer {
+                id = "gmazzo"
+                name = id
+                email = "gmazzo65@gmail.com"
+            }
+        }
+
+        scm {
+            connection = originUrl
+            developerConnection = originUrl
+            url = originUrl
+        }
     }
 }
 
@@ -102,15 +139,6 @@ dependencies {
     "kotlinTestImplementation"(plugin(libs.plugins.kotlin.multiplatform))
 }
 
-signing {
-    val signingKey: String? by project
-    val signingPassword: String? by project
-
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign(publishing.publications)
-    isRequired = signingKey != null || providers.environmentVariable("GRADLE_PUBLISH_KEY").isPresent
-}
-
 testing.suites.withType<JvmTestSuite> {
     useJUnitJupiter()
 }
@@ -127,6 +155,7 @@ components.named<AdhocComponentWithVariants>("java") {
 tasks.withType<Test>().configureEach {
     testClassesDirs += testFixtures.output.classesDirs
     environment("TEMP_DIR", temporaryDir)
+    finalizedBy("${name}CodeCoverageReport")
 }
 
 tasks.named<PluginUnderTestMetadata>("pluginUnderTestMetadataGradle80") {
@@ -141,8 +170,22 @@ tasks.withType<JacocoReport>().configureEach {
     reports.xml.required = true
 }
 
+afterEvaluate {
+    tasks.named<Jar>("javadocJar") {
+        from(tasks.dokkaGeneratePublicationJavadoc)
+    }
+}
+
 tasks.check {
     dependsOn(tasks.withType<JacocoReport>())
+}
+
+tasks.withType<PublishToMavenRepository>().configureEach {
+    mustRunAfter(tasks.publishPlugins)
+}
+
+tasks.publishPlugins {
+    enabled = !"$version".endsWith("-SNAPSHOT")
 }
 
 tasks.publish {
