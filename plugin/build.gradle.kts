@@ -19,7 +19,6 @@ plugins {
 
 group = "io.github.gmazzo.test.aggregation"
 description = "Test Aggregation Plugin for Android"
-scmVersion.repository.directory.set(rootDir.parentFile.absolutePath)
 version = scmVersion.version
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
@@ -79,7 +78,6 @@ gradlePlugin {
 }
 
 mavenPublishing {
-    signAllPublications()
     publishToMavenCentral("CENTRAL_PORTAL", automaticRelease = true)
 
     pom {
