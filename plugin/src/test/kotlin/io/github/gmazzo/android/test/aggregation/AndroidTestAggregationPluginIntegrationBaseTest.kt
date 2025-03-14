@@ -1,12 +1,12 @@
 package io.github.gmazzo.android.test.aggregation
 
 import io.github.gmazzo.android.test.aggregation.BuildConfig.MIN_GRADLE_VERSION
+import java.io.File
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.util.GradleVersion
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import java.io.File
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 abstract class AndroidTestAggregationPluginIntegrationBaseTest(

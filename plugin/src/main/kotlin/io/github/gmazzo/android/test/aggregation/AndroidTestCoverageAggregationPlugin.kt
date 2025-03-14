@@ -50,8 +50,8 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             jacocoVariants.addAllLater(provider {
                 val buildType = android.buildTypes[variant.buildType!!]
                 val aggregate = (variant as? HasUnitTest)?.unitTest != null &&
-                        buildType.enableUnitTestCoverage &&
-                        android.shouldAggregate(variant)
+                    buildType.enableUnitTestCoverage &&
+                    android.shouldAggregate(variant)
 
                 if (aggregate) listOf(variant) else emptyList()
             })

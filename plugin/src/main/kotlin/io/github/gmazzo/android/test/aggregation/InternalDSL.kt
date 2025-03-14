@@ -79,9 +79,9 @@ internal fun Project.ensureItsNotJava() = plugins.withId("java-base") {
  */
 internal fun BaseExtension.shouldAggregate(variant: Variant) =
     (sequenceOf(buildTypes[variant.buildType!!].aggregateTestCoverage) +
-            variant.productFlavors.asSequence()
-                .map { (_, flavor) -> productFlavors[flavor] }
-                .map { it.aggregateTestCoverage })
+        variant.productFlavors.asSequence()
+            .map { (_, flavor) -> productFlavors[flavor] }
+            .map { it.aggregateTestCoverage })
         .mapNotNull { it.orNull }
         .reduceOrNull { acc, aggregate -> acc || aggregate } != false
 
@@ -90,7 +90,7 @@ internal fun TestAggregationExtension.aggregateProject(
     config: Configuration
 ) =
     modules.includes(project) &&
-            config.dependencies.add(project.dependencies.testAggregation(project))
+        config.dependencies.add(project.dependencies.testAggregation(project))
 
 private fun TestAggregationExtension.Modules.includes(project: Project) =
     (includes.get()

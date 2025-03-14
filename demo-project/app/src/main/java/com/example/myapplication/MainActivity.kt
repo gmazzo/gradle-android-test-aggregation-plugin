@@ -35,6 +35,6 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
+            || super.onSupportNavigateUp()
     }
 }

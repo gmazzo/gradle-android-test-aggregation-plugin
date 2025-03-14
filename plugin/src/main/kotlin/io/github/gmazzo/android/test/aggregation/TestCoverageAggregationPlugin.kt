@@ -34,7 +34,11 @@ class TestCoverageAggregationPlugin : Plugin<Project> {
                 with(GradleAPIAdapter) { setDefaultTestSuite() }
                 reportTask.configure {
                     executionData.setFrom(files(*executionData.from.toTypedArray()).asFileTree)
-                    classDirectories.setFrom(files(*classDirectories.from.toTypedArray()).asFileTree.matching(coverageExtension))
+                    classDirectories.setFrom(
+                        files(*classDirectories.from.toTypedArray()).asFileTree.matching(
+                            coverageExtension
+                        )
+                    )
                 }
             }
 
