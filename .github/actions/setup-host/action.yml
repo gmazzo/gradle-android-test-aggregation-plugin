@@ -29,7 +29,9 @@ runs:
         echo "$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools" >> "$GITHUB_PATH"
     - name: Accept Android licences
       shell: bash
-      run: yes | sdkmanager --licenses || true
+      run: |
+        yes | sdkmanager --licenses || true
+        sdkmanager emulator
     - name: Enable Hardware Acceleration
       shell: bash
       run: |
