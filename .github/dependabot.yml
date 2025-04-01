@@ -21,6 +21,8 @@ updates:
           - "org.jetbrains.kotlin*"
           - "com.google.devtools.ksp"
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directories:
+      - "/"
+      - "/.github/actions/*"
     schedule:
       interval: "weekly"
