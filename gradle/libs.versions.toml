@@ -9,7 +9,7 @@ androidx-navigation = "2.8.9"
 moshi = "1.15.2"
 
 [libraries]
-androidx-core = "androidx.core:core-ktx:1.15.0"
+androidx-core = "androidx.core:core-ktx:1.16.0"
 androidx-appcompat = "androidx.appcompat:appcompat:1.7.0"
 androidx-annotation = "androidx.annotation:annotation:1.9.1"
 androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.2.1"
