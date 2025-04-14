@@ -38,7 +38,7 @@ dokka = { id = "org.jetbrains.dokka-javadoc", version = "2.0.0" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlin-ksp = { id = "com.google.devtools.ksp", version = "2.1.20-1.0.32" }
+kotlin-ksp = { id = "com.google.devtools.ksp", version = "2.1.20-2.0.0" }
 kotlin-samReceiver = { id = "org.jetbrains.kotlin.plugin.sam.with.receiver", version.ref = "kotlin" }
 gitVersion = { id = "io.github.gmazzo.gitversion", version = "1.2.0" }
 gradle-multiapi = { id = "io.github.gmazzo.gradle.multiapi", version = "1.0.5" }
