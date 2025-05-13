@@ -5,7 +5,7 @@ agp = "8.10.0"
 android-minSDK = "21"
 android-compileSDK = "35"
 androidx-lifecycle = "2.9.0"
-androidx-navigation = "2.8.9"
+androidx-navigation = "2.9.0"
 moshi = "1.15.2"
 
 [libraries]
