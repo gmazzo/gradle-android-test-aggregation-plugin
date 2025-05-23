@@ -22,7 +22,8 @@ description = "Test Aggregation Plugin for Android"
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
 samWithReceiver.annotation(HasImplicitReceiver::class.qualifiedName!!)
-testing.suites.create<JvmTestSuite>("kotlinTest")
+
+val kotlinTest by testing.suites.creating(JvmTestSuite::class)
 
 val minGradleVersion = "8.0"
 val minAGPVersion = "8.1.0"
@@ -48,6 +49,7 @@ gradlePlugin {
     website = originUrl
 
     apiTargets(minGradleVersion, "8.13")
+    testSourceSets += kotlinTest.sources
 
     plugins.create("test-coverage-aggregation") {
         id = "io.github.gmazzo.test.aggregation.coverage"
