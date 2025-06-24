@@ -1,15 +1,14 @@
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsEnvSpec
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsPlugin
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsPlugin.Companion.kotlinNodeJsEnvSpec
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootEnvSpec
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 
 plugins {
     alias(libs.plugins.android.lib)
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.ksp)
-}
-
-afterEvaluate {
-    rootProject.the<NodeJsRootExtension>().download = false
-    rootProject.the<YarnRootExtension>().download = false
 }
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
@@ -27,6 +26,15 @@ kotlin {
     androidTarget()
     jvm()
     js { nodejs() }
+}
+
+listOf(
+    the<NodeJsEnvSpec>(),
+    rootProject.the<NodeJsEnvSpec>(),
+    rootProject.the<YarnRootEnvSpec>(),
+).forEach {
+    it.download = false
+    it.downloadBaseUrl = null
 }
 
 dependencies {
