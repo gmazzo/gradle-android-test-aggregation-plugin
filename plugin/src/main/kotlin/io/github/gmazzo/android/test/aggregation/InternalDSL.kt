@@ -19,15 +19,15 @@ import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByName
+import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.testAggregation
-import org.gradle.kotlin.dsl.the
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.gradle.util.GradleVersion
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 
 internal val Project.android
-    get() = the<BaseExtension>()
+    get() = extensions.getByName<BaseExtension>("android")
 
 internal val Project.androidComponents
     get() = extensions.getByName<AndroidComponentsExtension<*, *, *>>("androidComponents")
@@ -107,6 +107,6 @@ internal val TaskProvider<AbstractTestTask>.execData
     get() = map {
         when (it) {
             is AndroidUnitTest -> it.jacocoCoverageOutputFile
-            else -> it.the<JacocoTaskExtension>().destinationFile
+            else -> it.extensions.getByType<JacocoTaskExtension>().destinationFile
         }
     }
