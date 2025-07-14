@@ -6,9 +6,9 @@ import org.gradle.api.reporting.ReportingExtension
 import org.gradle.api.tasks.testing.AggregateTestReport
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.provideDelegate
-import org.gradle.kotlin.dsl.the
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 class TestResultsAggregationPlugin : Plugin<Project> {
@@ -23,7 +23,7 @@ class TestResultsAggregationPlugin : Plugin<Project> {
         val extension = testAggregationExtension
 
         val testResultsReport =
-            the<ReportingExtension>().reports.create<AggregateTestReport>("testAggregatedReport") {
+            extensions.getByType<ReportingExtension>().reports.create<AggregateTestReport>("testAggregatedReport") {
                 with(GradleAPIAdapter) { setDefaultTestSuite() }
             }
 

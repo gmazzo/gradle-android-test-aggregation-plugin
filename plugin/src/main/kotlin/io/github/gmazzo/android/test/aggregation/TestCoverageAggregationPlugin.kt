@@ -8,10 +8,10 @@ import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.register
-import org.gradle.kotlin.dsl.the
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.testing.jacoco.plugins.JacocoCoverageReport
 import org.gradle.testing.jacoco.tasks.JacocoCoverageVerification
@@ -30,7 +30,7 @@ class TestCoverageAggregationPlugin : Plugin<Project> {
             .create(PatternFilterable::class, "coverage", PatternSet::class)
 
         val jacocoReport =
-            the<ReportingExtension>().reports.create<JacocoCoverageReport>("jacocoAggregatedReport") {
+            extensions.getByType<ReportingExtension>().reports.create<JacocoCoverageReport>("jacocoAggregatedReport") {
                 with(GradleAPIAdapter) { setDefaultTestSuite() }
                 reportTask.configure {
                     executionData.setFrom(files(*executionData.from.toTypedArray()).asFileTree)
