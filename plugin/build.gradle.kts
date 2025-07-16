@@ -79,7 +79,7 @@ gradlePlugin {
 }
 
 mavenPublishing {
-    publishToMavenCentral("CENTRAL_PORTAL", automaticRelease = true)
+    publishToMavenCentral(automaticRelease = true)
 
     pom {
         name = "${rootProject.name}-${project.name}"
