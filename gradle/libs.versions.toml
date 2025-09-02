@@ -4,7 +4,7 @@ kotlin = "2.2.10"
 agp = "8.12.1"
 android-minSDK = "21"
 android-compileSDK = "36"
-androidx-lifecycle = "2.9.2"
+androidx-lifecycle = "2.9.3"
 androidx-navigation = "2.9.3"
 moshi = "1.15.2"
 
