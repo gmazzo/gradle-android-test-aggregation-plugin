@@ -40,7 +40,7 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version = "2.2.10-2.0.2" }
 kotlin-samReceiver = { id = "org.jetbrains.kotlin.plugin.sam.with.receiver", version.ref = "kotlin" }
-gitVersion = { id = "io.github.gmazzo.gitversion", version = "1.4.0" }
+gitVersion = { id = "io.github.gmazzo.gitversion", version = "1.5.1" }
 gradle-multiapi = { id = "io.github.gmazzo.gradle.multiapi", version = "1.0.6" }
 gradle-pluginPublish = { id = "com.gradle.plugin-publish", version = "1.3.1" }
 gradle-testkit-jacoco = { id = "io.github.gmazzo.gradle.testkit.jacoco", version = "1.0.4" }
