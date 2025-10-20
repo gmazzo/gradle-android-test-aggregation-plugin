@@ -34,7 +34,7 @@ android-lib = { id = "com.android.library", version.ref = "agp" }
 android-test = { id = "com.android.test", version.ref = "agp" }
 android-baseline = { id = "androidx.baselineprofile", version = "1.4.1" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "5.7.0" }
-dokka = { id = "org.jetbrains.dokka-javadoc", version = "2.0.0" }
+dokka = { id = "org.jetbrains.dokka-javadoc", version = "2.1.0" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
