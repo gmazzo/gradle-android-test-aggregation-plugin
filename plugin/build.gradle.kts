@@ -1,5 +1,8 @@
+@file:OptIn(ExperimentalAbiValidation::class)
+
 import com.android.build.api.AndroidPluginVersion
 import org.gradle.api.internal.catalog.ExternalModuleDependencyFactory.PluginNotationSupplier
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 
 plugins {
     alias(libs.plugins.android) apply false
@@ -22,6 +25,7 @@ description = "Test Aggregation Plugin for Android"
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
 samWithReceiver.annotation(HasImplicitReceiver::class.qualifiedName!!)
+kotlin.abiValidation.enabled = true
 
 val kotlinTest by testing.suites.creating(JvmTestSuite::class)
 
@@ -175,8 +179,12 @@ afterEvaluate {
     }
 }
 
+tasks.validatePlugins {
+    enableStricterValidation = true
+}
+
 tasks.check {
-    dependsOn(tasks.withType<JacocoReport>())
+    dependsOn(tasks.withType<JacocoReport>(), tasks.checkLegacyAbi)
 }
 
 tasks.withType<PublishToMavenRepository>().configureEach {
