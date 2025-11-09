@@ -7,18 +7,18 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.testing.AggregateTestReport
 import org.gradle.testing.jacoco.plugins.JacocoCoverageReport
 
-interface GradleAPIAdapter {
+public interface GradleAPIAdapter {
 
-    fun AttributeContainer.setDefaultTestSuite(objects: ObjectFactory)
+    public fun AttributeContainer.setDefaultTestSuite(objects: ObjectFactory)
 
-    fun AggregateTestReport.setDefaultTestSuite()
+    public fun AggregateTestReport.setDefaultTestSuite()
 
-    fun JacocoCoverageReport.setDefaultTestSuite()
+    public fun JacocoCoverageReport.setDefaultTestSuite()
 
-    val ProjectDependency.objects: ObjectFactory
+    public val ProjectDependency.objects: ObjectFactory
 
-    val ProjectDependency.projectPath: String
+    public val ProjectDependency.projectPath: String
 
-    companion object : GradleAPIAdapter by ServiceLoader.load(GradleAPIAdapter::class.java).single()
+    public companion object : GradleAPIAdapter by ServiceLoader.load(GradleAPIAdapter::class.java).single()
 
 }

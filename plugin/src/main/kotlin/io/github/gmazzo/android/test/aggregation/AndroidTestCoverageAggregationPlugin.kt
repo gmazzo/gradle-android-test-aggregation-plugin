@@ -35,7 +35,7 @@ import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.Companion.MAIN_COMPILATION_NAME
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
-abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
+public abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {
         apply<AndroidTestBaseAggregationPlugin>()

@@ -11,7 +11,7 @@ import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 
-class TestResultsAggregationPlugin : Plugin<Project> {
+public class TestResultsAggregationPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {
         ensureMinVersions()

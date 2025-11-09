@@ -25,7 +25,11 @@ description = "Test Aggregation Plugin for Android"
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
 samWithReceiver.annotation(HasImplicitReceiver::class.qualifiedName!!)
-kotlin.abiValidation.enabled = true
+
+kotlin {
+    abiValidation.enabled = true
+    explicitApi()
+}
 
 val kotlinTest by testing.suites.creating(JvmTestSuite::class)
 
