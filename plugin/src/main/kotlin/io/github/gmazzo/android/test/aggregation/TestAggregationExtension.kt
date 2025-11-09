@@ -7,49 +7,49 @@ import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Nested
 import org.gradle.kotlin.dsl.invoke
 
-abstract class TestAggregationExtension {
+public abstract class TestAggregationExtension {
 
     @get:Nested
-    abstract val modules: Modules
+    public abstract val modules: Modules
 
-    fun modules(configure: Action<Modules>) = configure(modules)
+    public fun modules(configure: Action<Modules>): Unit = configure(modules)
 
     /**
      * Controls which module should be automatically aggregated
      */
-    abstract class Modules {
+    public abstract class Modules {
 
         /**
          * List of [Project.getPath] that should be included in the aggregation. If empty, all projects are included
          */
-        abstract val includes: SetProperty<String>
+        public abstract val includes: SetProperty<String>
 
         /**
          * List of [Project.getPath] that should be excluded from the aggregation
          */
-        abstract val excludes: SetProperty<String>
+        public abstract val excludes: SetProperty<String>
 
-        fun include(vararg includes: Project) = apply {
+        public fun include(vararg includes: Project): TestAggregationExtension.Modules = apply {
             this.includes.addAll(includes.map { it.path })
         }
 
-        fun include(includes: Iterable<Project>) = apply {
+        public fun include(includes: Iterable<Project>): TestAggregationExtension.Modules = apply {
             this.includes.addAll(includes.map { it.path })
         }
 
-        fun include(vararg includes: ProjectDependency) = with(GradleAPIAdapter) {
+        public fun include(vararg includes: ProjectDependency): Unit = with(GradleAPIAdapter) {
             this@Modules.includes.addAll(includes.map { it.projectPath })
         }
 
-        fun exclude(vararg excludes: Project) = apply {
+        public fun exclude(vararg excludes: Project): TestAggregationExtension.Modules = apply {
             this.excludes.addAll(excludes.map { it.path })
         }
 
-        fun exclude(excludes: Iterable<Project>) = apply {
+        public fun exclude(excludes: Iterable<Project>): TestAggregationExtension.Modules = apply {
             this.excludes.addAll(excludes.map { it.path })
         }
 
-        fun exclude(vararg excludes: ProjectDependency) = with(GradleAPIAdapter) {
+        public fun exclude(vararg excludes: ProjectDependency): Unit = with(GradleAPIAdapter) {
             this@Modules.excludes.addAll(excludes.map { it.projectPath })
         }
 

@@ -11,9 +11,9 @@ import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Property
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
-const val USAGE_TEST_AGGREGATION = "test-aggregation"
+public const val USAGE_TEST_AGGREGATION: String = "test-aggregation"
 
-fun DependencyHandler.testAggregation(dependency: Any) =
+public fun DependencyHandler.testAggregation(dependency: Any): ProjectDependency =
     (create(dependency) as ProjectDependency).apply {
         UsageTestAggregationCompatibilityRule.bind(attributesSchema)
 
@@ -25,11 +25,11 @@ fun DependencyHandler.testAggregation(dependency: Any) =
         }
     }
 
-val BuildType.aggregateTestCoverage: Property<Boolean>
+public val BuildType.aggregateTestCoverage: Property<Boolean>
     get() = extensions.getByName<Property<Boolean>>(::aggregateTestCoverage.name)
 
-val ProductFlavor.aggregateTestCoverage: Property<Boolean>
+public val ProductFlavor.aggregateTestCoverage: Property<Boolean>
     get() = extensions.getByName<Property<Boolean>>(::aggregateTestCoverage.name)
 
-val KotlinJvmTarget.aggregateTestCoverage: Property<Boolean>
+public val KotlinJvmTarget.aggregateTestCoverage: Property<Boolean>
     get() = (this as ExtensionAware).extensions.getByName<Property<Boolean>>(::aggregateTestCoverage.name)

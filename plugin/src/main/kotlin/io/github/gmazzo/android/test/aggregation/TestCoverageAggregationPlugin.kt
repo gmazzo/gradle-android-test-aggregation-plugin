@@ -16,7 +16,7 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.testing.jacoco.plugins.JacocoCoverageReport
 import org.gradle.testing.jacoco.tasks.JacocoCoverageVerification
 
-class TestCoverageAggregationPlugin : Plugin<Project> {
+public class TestCoverageAggregationPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {
         ensureMinVersions()
