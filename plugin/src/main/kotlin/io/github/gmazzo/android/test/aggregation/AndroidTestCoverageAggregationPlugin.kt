@@ -23,6 +23,7 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.USAGE_TEST_AGGREGATION
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.creating
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.listProperty
@@ -57,7 +58,7 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             })
         }
 
-        val codeCoverageExecutionData by configurations.registering {
+        val codeCoverageExecutionData by configurations.creating {
             isCanBeConsumed = true
             isCanBeResolved = false
             isVisible = false
@@ -83,7 +84,7 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             destinationDir = temporaryDir
             duplicatesStrategy = DuplicatesStrategy.INCLUDE // in case of duplicated classes
             jacocoVariants.all {
-                from(sources.java?.all, sources.kotlin?.all)
+                from(listOfNotNull(sources.java?.all, sources.kotlin?.all))
             }
         }
 
@@ -151,7 +152,7 @@ abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
         plugins.withId("kotlin-multiplatform") {
             with(
                 KMPSupport(
-                    codeCoverageExecutionData.get(),
+                    codeCoverageExecutionData,
                     allVariantsSourcesForCoverageReport,
                     allVariantsClassesForCoverageReport,
                 )
