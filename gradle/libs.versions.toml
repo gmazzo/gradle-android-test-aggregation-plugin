@@ -2,7 +2,7 @@
 java = "17"
 kotlin = "2.2.21"
 agp = "8.13.2"
-android-minSDK = "21"
+android-minSDK = "23"
 android-compileSDK = "36"
 androidx-lifecycle = "2.10.0"
 androidx-navigation = "2.9.6"
