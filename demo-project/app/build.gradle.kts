@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android)
-    alias(libs.plugins.kotlin.android)
 }
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
@@ -24,7 +23,6 @@ android {
             enableUnitTestCoverage = true
         }
         release {
-            aggregateTestCoverage = false
 
             isMinifyEnabled = false
             signingConfig = getByName("debug").signingConfig
@@ -67,6 +65,6 @@ dependencies {
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui)
 
-    testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.robolectric)
 }

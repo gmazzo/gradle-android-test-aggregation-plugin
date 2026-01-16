@@ -6,5 +6,5 @@ plugins {
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
 
 dependencies {
-    testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlin.test.junit)
 }

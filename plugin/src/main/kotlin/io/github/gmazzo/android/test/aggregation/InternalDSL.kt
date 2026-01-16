@@ -27,7 +27,7 @@ import org.gradle.util.GradleVersion
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 
 internal val Project.android
-    get() = extensions.getByName<CommonExtension<*, *, *, *, *, *>>("android")
+    get() = extensions.getByName<CommonExtension>("android")
 
 internal val Project.androidComponents
     get() = extensions.getByName<AndroidComponentsExtension<*, *, *>>("androidComponents")
@@ -77,7 +77,7 @@ internal fun Project.ensureItsNotJava() = plugins.withId("java-base") {
  * - If any component of the variant says `false` (and other says nothing `null`), then `false`
  * - If no component says anything (`null`), then `true` (because its `BuildType` has `enableUnitTestCoverage = true`)
  */
-internal fun CommonExtension<*, *, *, *, *, *>.shouldAggregate(variant: Variant) =
+internal fun CommonExtension.shouldAggregate(variant: Variant) =
     (sequenceOf(buildTypes[variant.buildType!!].aggregateTestCoverage) +
         variant.productFlavors.asSequence()
             .map { (_, flavor) -> productFlavors[flavor] }

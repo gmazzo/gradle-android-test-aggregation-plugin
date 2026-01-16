@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.test)
     alias(libs.plugins.android.baseline)
-    alias(libs.plugins.kotlin.android)
 }
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
