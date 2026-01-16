@@ -22,6 +22,7 @@ android {
             enableUnitTestCoverage = true
         }
         release {
+            aggregateTestCoverage = false
 
             isMinifyEnabled = false
             proguardFiles(

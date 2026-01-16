@@ -23,6 +23,7 @@ android {
             enableUnitTestCoverage = true
         }
         release {
+            aggregateTestCoverage = false
 
             isMinifyEnabled = false
             signingConfig = getByName("debug").signingConfig
