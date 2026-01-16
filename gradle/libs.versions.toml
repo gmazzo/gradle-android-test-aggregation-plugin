@@ -1,7 +1,7 @@
 [versions]
 java = "17"
 kotlin = "2.3.0"
-agp = "8.13.2"
+agp = "9.0.0"
 android-minSDK = "23"
 android-compileSDK = "36"
 androidx-lifecycle = "2.10.0"
@@ -24,6 +24,7 @@ google-material = "com.google.android.material:material:1.13.0"
 junit-bom = { module = "org.junit:junit-bom", version = "6.0.2" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
 moshi-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshi" }
 robolectric = "org.robolectric:robolectric:4.16"
@@ -31,17 +32,17 @@ robolectric = "org.robolectric:robolectric:4.16"
 [plugins]
 android = { id = "com.android.application", version.ref = "agp" }
 android-lib = { id = "com.android.library", version.ref = "agp" }
+android-multiplatform = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 android-test = { id = "com.android.test", version.ref = "agp" }
-android-baseline = { id = "androidx.baselineprofile", version = "1.4.1" }
+android-baseline = { id = "androidx.baselineprofile", version = "1.5.0-alpha01" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "6.0.7" }
 dokka = { id = "org.jetbrains.dokka-javadoc", version = "2.1.0" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version = "2.3.4" }
 kotlin-samReceiver = { id = "org.jetbrains.kotlin.plugin.sam.with.receiver", version.ref = "kotlin" }
 gitVersion = { id = "io.github.gmazzo.gitversion", version = "1.5.1" }
-gradle-multiapi = { id = "io.github.gmazzo.gradle.multiapi", version = "1.0.6" }
+gradle-multiapi = { id = "io.github.gmazzo.gradle.multiapi", version = "1.1.0" }
 gradle-pluginPublish = { id = "com.gradle.plugin-publish", version = "2.0.0" }
 gradle-testkit-jacoco = { id = "io.github.gmazzo.gradle.testkit.jacoco", version = "1.0.5" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.35.0" }

@@ -59,6 +59,16 @@ gradlePlugin {
     apiTargets(minGradleVersion, "8.13")
     testSourceSets += kotlinTest.sources
 
+    apiTargets.targetAPIs.named("8.13") {
+        // latest AGP needs latest Gradle, so we remove 8.13 and add current Gradle's
+        configurations.named(testSuite.sources.implementationConfigurationName) {
+            dependencies.remove(gradleTestKit)
+            dependencies.remove(gradleKotlinDsl)
+            dependencies.add(project.dependencies.gradleTestKit())
+            dependencies.add(project.gradleKotlinDsl())
+        }
+    }
+
     plugins.create("test-coverage-aggregation") {
         id = "io.github.gmazzo.test.aggregation.coverage"
         displayName = name

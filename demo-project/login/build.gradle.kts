@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.lib)
-    alias(libs.plugins.kotlin.android)
 }
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
@@ -23,7 +22,6 @@ android {
             enableUnitTestCoverage = true
         }
         release {
-            aggregateTestCoverage = false
 
             isMinifyEnabled = false
             proguardFiles(
@@ -43,7 +41,7 @@ dependencies {
     implementation(libs.androidx.livedata)
     implementation(libs.androidx.viewmodel)
 
-    testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlin.test.junit)
 
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.androidx.test.espresso)
