@@ -1,7 +1,7 @@
 [versions]
 java = "17"
 kotlin = "2.3.10"
-agp = "9.0.0"
+agp = "9.0.1"
 android-minSDK = "23"
 android-compileSDK = "36"
 androidx-lifecycle = "2.10.0"
