@@ -133,6 +133,7 @@ fun DependencyHandler.plugin(dependency: Provider<PluginDependency>) =
 fun DependencyHandler.plugin(dependency: PluginNotationSupplier) =
     plugin(dependency.asProvider())
 
+val kotlinBOM = with(dependencies) { create(platform(libs.kotlin.bom).get()) }
 val oldAGPDependency = dependencies
     .plugin(libs.plugins.android)
     .let { dependencies.create("${it.group}:${it.name}:$minAGPVersion") }
@@ -140,6 +141,8 @@ val oldAGPDependency = dependencies
 dependencies {
     compileOnly(plugin(libs.plugins.android))
     compileOnly(plugin(libs.plugins.kotlin.multiplatform))
+
+    implementation(kotlinBOM)
 
     testFixturesApi(platform(libs.junit.bom))
     testFixturesApi(libs.junit.params)
@@ -176,11 +179,16 @@ tasks.withType<Test>().configureEach {
 }
 
 tasks.named<PluginUnderTestMetadata>("pluginUnderTestMetadataGradle80") {
-    pluginClasspath.from(configurations.detachedConfiguration(oldAGPDependency))
+    pluginClasspath.from(configurations.detachedConfiguration(kotlinBOM, oldAGPDependency))
 }
 
 tasks.named<PluginUnderTestMetadata>("pluginUnderTestMetadataGradle813") {
-    pluginClasspath.from(configurations.detachedConfiguration(dependencies.plugin(libs.plugins.android)))
+    pluginClasspath.from(
+        configurations.detachedConfiguration(
+            kotlinBOM,
+            dependencies.plugin(libs.plugins.android)
+        )
+    )
 }
 
 tasks.withType<JacocoReport>().configureEach {

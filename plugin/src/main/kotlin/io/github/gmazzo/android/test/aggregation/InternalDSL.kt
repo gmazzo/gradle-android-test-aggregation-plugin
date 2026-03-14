@@ -77,13 +77,12 @@ internal fun Project.ensureItsNotJava() = plugins.withId("java-base") {
  * - If any component of the variant says `false` (and other says nothing `null`), then `false`
  * - If no component says anything (`null`), then `true` (because its `BuildType` has `enableUnitTestCoverage = true`)
  */
-internal fun CommonExtension.shouldAggregate(variant: Variant) =
-    (sequenceOf(buildTypes[variant.buildType!!].aggregateTestCoverage) +
-        variant.productFlavors.asSequence()
-            .map { (_, flavor) -> productFlavors[flavor] }
-            .map { it.aggregateTestCoverage })
-        .mapNotNull { it.orNull }
-        .reduceOrNull { acc, aggregate -> acc || aggregate } != false
+internal fun CommonExtension.shouldAggregate(variant: Variant) = sequence {
+    yield(buildTypes[variant.buildType!!].aggregateTestCoverage)
+    yieldAll(variant.productFlavors.asSequence()
+        .map { (_, flavor) -> productFlavors[flavor] }
+        .map { it.aggregateTestCoverage })
+}.mapNotNull { it.orNull }.reduceOrNull { acc, aggregate -> acc || aggregate } != false
 
 internal fun TestAggregationExtension.aggregateProject(
     project: Project,
