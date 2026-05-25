@@ -82,7 +82,7 @@ internal fun CommonExtension.shouldAggregate(variant: Variant) = sequence {
     yieldAll(variant.productFlavors.asSequence()
         .map { (_, flavor) -> productFlavors[flavor] }
         .map { it.aggregateTestCoverage })
-}.mapNotNull { it.orNull }.reduceOrNull { acc, aggregate -> acc || aggregate } != false
+}.mapNotNull { it.orNull }.fold(true) { acc, it -> acc && it }
 
 internal fun TestAggregationExtension.aggregateProject(
     project: Project,

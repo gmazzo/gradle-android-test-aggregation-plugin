@@ -150,6 +150,9 @@ dependencies {
     testFixturesCompileOnly(gradleKotlinDsl())
     testFixturesCompileOnly(oldAGPDependency)
 
+    testImplementation(libs.mockk)
+    testCompileOnly(plugin(libs.plugins.android))
+
     "gradle80TestImplementation"(oldAGPDependency)
     "gradle813TestImplementation"(plugin(libs.plugins.android))
 

@@ -57,11 +57,17 @@ public final class io/github/gmazzo/android/test/aggregation/TestResultsAggregat
 	public fun apply (Lorg/gradle/api/Project;)V
 }
 
-public final class org/gradle/kotlin/dsl/TestAggregationDSLKt {
-	public static final field USAGE_TEST_AGGREGATION Ljava/lang/String;
+public final class org/gradle/kotlin/dsl/AndroidTestAggregationDSLKt {
 	public static final fun getAggregateTestCoverage (Lcom/android/build/api/dsl/BuildType;)Lorg/gradle/api/provider/Property;
 	public static final fun getAggregateTestCoverage (Lcom/android/build/api/dsl/ProductFlavor;)Lorg/gradle/api/provider/Property;
+}
+
+public final class org/gradle/kotlin/dsl/KotlinTestAggregationDSLKt {
 	public static final fun getAggregateTestCoverage (Lorg/jetbrains/kotlin/gradle/targets/jvm/KotlinJvmTarget;)Lorg/gradle/api/provider/Property;
+}
+
+public final class org/gradle/kotlin/dsl/TestAggregationDSLKt {
+	public static final field USAGE_TEST_AGGREGATION Ljava/lang/String;
 	public static final fun testAggregation (Lorg/gradle/api/artifacts/dsl/DependencyHandler;Ljava/lang/Object;)Lorg/gradle/api/artifacts/ProjectDependency;
 }
 
