@@ -29,28 +29,28 @@ public abstract class TestAggregationExtension {
          */
         public abstract val excludes: SetProperty<String>
 
-        public fun include(vararg includes: Project): TestAggregationExtension.Modules = apply {
+        public fun include(vararg includes: Project): Modules = apply {
             this.includes.addAll(includes.map { it.path })
         }
 
-        public fun include(includes: Iterable<Project>): TestAggregationExtension.Modules = apply {
+        public fun include(includes: Iterable<Project>): Modules = apply {
             this.includes.addAll(includes.map { it.path })
         }
 
-        public fun include(vararg includes: ProjectDependency): Unit = with(GradleAPIAdapter) {
-            this@Modules.includes.addAll(includes.map { it.projectPath })
+        public fun include(vararg includes: ProjectDependency): Modules = apply  {
+            this@Modules.includes.addAll(includes.map { it.path })
         }
 
-        public fun exclude(vararg excludes: Project): TestAggregationExtension.Modules = apply {
+        public fun exclude(vararg excludes: Project): Modules = apply {
             this.excludes.addAll(excludes.map { it.path })
         }
 
-        public fun exclude(excludes: Iterable<Project>): TestAggregationExtension.Modules = apply {
+        public fun exclude(excludes: Iterable<Project>): Modules = apply {
             this.excludes.addAll(excludes.map { it.path })
         }
 
-        public fun exclude(vararg excludes: ProjectDependency): Unit = with(GradleAPIAdapter) {
-            this@Modules.excludes.addAll(excludes.map { it.projectPath })
+        public fun exclude(vararg excludes: ProjectDependency): Modules = apply  {
+            this@Modules.excludes.addAll(excludes.map { it.path })
         }
 
     }

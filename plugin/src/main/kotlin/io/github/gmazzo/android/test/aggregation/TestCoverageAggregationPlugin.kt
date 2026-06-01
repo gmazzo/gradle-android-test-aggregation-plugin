@@ -4,6 +4,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.reporting.ReportingExtension
+import org.gradle.api.tasks.SourceSet.TEST_SOURCE_SET_NAME
 import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.kotlin.dsl.apply
@@ -31,7 +32,7 @@ public class TestCoverageAggregationPlugin : Plugin<Project> {
 
         val jacocoReport =
             extensions.getByType<ReportingExtension>().reports.create<JacocoCoverageReport>("jacocoAggregatedReport") {
-                with(GradleAPIAdapter) { setDefaultTestSuite() }
+                testSuiteName.set(TEST_SOURCE_SET_NAME)
                 reportTask.configure {
                     executionData.setFrom(files(*executionData.from.toTypedArray()).asFileTree)
                     classDirectories.setFrom(

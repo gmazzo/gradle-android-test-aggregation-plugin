@@ -2,6 +2,8 @@
 
 import com.android.build.api.AndroidPluginVersion
 import org.gradle.api.internal.catalog.ExternalModuleDependencyFactory.PluginNotationSupplier
+import org.gradle.internal.extensions.stdlib.capitalized
+import org.gradle.plugin.devel.tasks.PluginUnderTestMetadata.METADATA_FILE_NAME
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 
 plugins {
@@ -12,7 +14,6 @@ plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.mavenPublish)
     alias(libs.plugins.gitVersion)
-    alias(libs.plugins.gradle.multiapi)
     alias(libs.plugins.gradle.pluginPublish)
     alias(libs.plugins.gradle.testkit.jacoco)
     alias(libs.plugins.publicationsReport)
@@ -33,19 +34,13 @@ kotlin {
 
 val kotlinTest by testing.suites.creating(JvmTestSuite::class)
 
-val minGradleVersion = "8.0"
+val minGradleVersion = "8.13"
 val minAGPVersion = "8.1.0"
 
 buildConfig {
     packageName = "io.github.gmazzo.android.test.aggregation"
-    buildConfigField<GradleVersion>(
-        "MIN_GRADLE_VERSION",
-        expression("GradleVersion.version(\"$minGradleVersion\")")
-    )
-    buildConfigField<AndroidPluginVersion>(
-        "MIN_AGP_VERSION",
-        expression("AndroidPluginVersion(${minAGPVersion.replace('.', ',')})")
-    )
+    buildConfigField("MIN_GRADLE_VERSION", minGradleVersion)
+    buildConfigField("MIN_AGP_VERSION", minAGPVersion)
 }
 
 val originUrl = providers
@@ -56,18 +51,7 @@ gradlePlugin {
     vcsUrl = originUrl
     website = originUrl
 
-    apiTargets(minGradleVersion, "8.13")
     testSourceSets += kotlinTest.sources
-
-    apiTargets.targetAPIs.named("8.13") {
-        // latest AGP needs latest Gradle, so we remove 8.13 and add current Gradle's
-        configurations.named(testSuite.sources.implementationConfigurationName) {
-            dependencies.remove(gradleTestKit)
-            dependencies.remove(gradleKotlinDsl)
-            dependencies.add(project.dependencies.gradleTestKit())
-            dependencies.add(project.gradleKotlinDsl())
-        }
-    }
 
     plugins.create("test-coverage-aggregation") {
         id = "io.github.gmazzo.test.aggregation.coverage"
@@ -133,30 +117,38 @@ fun DependencyHandler.plugin(dependency: Provider<PluginDependency>) =
 fun DependencyHandler.plugin(dependency: PluginNotationSupplier) =
     plugin(dependency.asProvider())
 
+fun dependencyMetadata(prefix: String, dependency: Any) = dependencies.create(dependency).let { dependency ->
+    val baseName = "$prefix-${dependency.version}"
+
+    tasks.register<PluginUnderTestMetadata>("pluginUnderTestMetadata-${baseName}") {
+        pluginClasspath.from(configurations.detachedConfiguration(dependency))
+        outputDirectory.convention(layout.buildDirectory.dir(this@register.name))
+        doLast {
+            with(outputDirectory.asFile.get()) {
+                resolve(METADATA_FILE_NAME).renameTo(resolve("$baseName-metadata.properties"))
+            }
+        }
+    }
+}
+
 val kotlinBOM = with(dependencies) { create(platform(libs.kotlin.bom).get()) }
-val oldAGPDependency = dependencies
-    .plugin(libs.plugins.android)
-    .let { dependencies.create("${it.group}:${it.name}:$minAGPVersion") }
 
 dependencies {
+    compileOnly(gradleKotlinDsl())
     compileOnly(plugin(libs.plugins.android))
     compileOnly(plugin(libs.plugins.kotlin.multiplatform))
 
     implementation(kotlinBOM)
 
+    testFixturesApi(gradleKotlinDsl())
     testFixturesApi(platform(libs.junit.bom))
     testFixturesApi(libs.junit.params)
 
-    testFixturesCompileOnly(gradleKotlinDsl())
-    testFixturesCompileOnly(oldAGPDependency)
+    testFixturesCompileOnly(plugin(libs.plugins.android))
 
+    testImplementation(plugin(libs.plugins.android))
     testImplementation(libs.mockk)
-    testCompileOnly(plugin(libs.plugins.android))
 
-    "gradle80TestImplementation"(oldAGPDependency)
-    "gradle813TestImplementation"(plugin(libs.plugins.android))
-
-    "kotlinTestImplementation"(gradleKotlinDsl())
     "kotlinTestImplementation"(testFixtures(project))
     "kotlinTestImplementation"(plugin(libs.plugins.android))
     "kotlinTestImplementation"(plugin(libs.plugins.kotlin.multiplatform))
@@ -166,7 +158,15 @@ testing.suites.withType<JvmTestSuite> {
     useJUnitJupiter()
 }
 
+val test by sourceSets
 val testFixtures by sourceSets
+
+test.resources.srcDirs(
+    dependencyMetadata("agp", dependencies.plugin(libs.plugins.android)),
+    dependencyMetadata("agp", dependencies.plugin(libs.plugins.android).run {
+        "$group:$name:$minAGPVersion"
+    }),
+)
 
 components.named<AdhocComponentWithVariants>("java") {
     sequenceOf(
@@ -179,19 +179,6 @@ tasks.withType<Test>().configureEach {
     testClassesDirs += testFixtures.output.classesDirs
     environment("TEMP_DIR", temporaryDir)
     finalizedBy("${name}CodeCoverageReport")
-}
-
-tasks.named<PluginUnderTestMetadata>("pluginUnderTestMetadataGradle80") {
-    pluginClasspath.from(configurations.detachedConfiguration(kotlinBOM, oldAGPDependency))
-}
-
-tasks.named<PluginUnderTestMetadata>("pluginUnderTestMetadataGradle813") {
-    pluginClasspath.from(
-        configurations.detachedConfiguration(
-            kotlinBOM,
-            dependencies.plugin(libs.plugins.android)
-        )
-    )
 }
 
 tasks.withType<JacocoReport>().configureEach {
