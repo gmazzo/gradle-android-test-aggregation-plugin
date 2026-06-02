@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package io.github.gmazzo.android.test.aggregation
 
 import com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
@@ -5,7 +7,6 @@ import io.github.gmazzo.android.test.aggregation.BuildConfig.MIN_AGP_VERSION
 import io.github.gmazzo.android.test.aggregation.BuildConfig.MIN_GRADLE_VERSION
 import java.io.File
 import org.gradle.testkit.runner.GradleRunner
-import org.gradle.testkit.runner.internal.PluginUnderTestMetadataReading
 import org.gradle.testkit.runner.internal.PluginUnderTestMetadataReading.readImplementationClasspath
 import org.gradle.util.GradleVersion
 import org.junit.jupiter.api.Assertions.assertEquals

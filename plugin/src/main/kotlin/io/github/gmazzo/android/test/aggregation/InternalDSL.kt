@@ -2,7 +2,6 @@
 
 package io.github.gmazzo.android.test.aggregation
 
-import com.android.build.api.AndroidPluginVersion
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.extension.impl.CurrentAndroidGradlePluginVersion
 import com.android.build.api.variant.AndroidComponentsExtension
@@ -10,7 +9,6 @@ import com.android.build.api.variant.HasUnitTest
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.tasks.factory.AndroidUnitTest
 import com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
-import java.net.URLClassLoader
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.TaskProvider

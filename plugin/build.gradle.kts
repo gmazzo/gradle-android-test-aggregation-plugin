@@ -1,8 +1,6 @@
 @file:OptIn(ExperimentalAbiValidation::class)
 
-import com.android.build.api.AndroidPluginVersion
 import org.gradle.api.internal.catalog.ExternalModuleDependencyFactory.PluginNotationSupplier
-import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.plugin.devel.tasks.PluginUnderTestMetadata.METADATA_FILE_NAME
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 
