@@ -3,6 +3,7 @@ package io.github.gmazzo.android.test.aggregation
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.reporting.ReportingExtension
+import org.gradle.api.tasks.SourceSet.TEST_SOURCE_SET_NAME
 import org.gradle.api.tasks.testing.AggregateTestReport
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.create
@@ -24,7 +25,7 @@ public class TestResultsAggregationPlugin : Plugin<Project> {
 
         val testResultsReport =
             extensions.getByType<ReportingExtension>().reports.create<AggregateTestReport>("testAggregatedReport") {
-                with(GradleAPIAdapter) { setDefaultTestSuite() }
+                testSuiteName.set(TEST_SOURCE_SET_NAME)
             }
 
         val testReportAggregation by configurations

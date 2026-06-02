@@ -10,6 +10,7 @@ import com.android.build.api.variant.HasUnitTest
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.tasks.factory.AndroidUnitTest
 import com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
+import java.net.URLClassLoader
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.TaskProvider
@@ -24,7 +25,6 @@ import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.testAggregation
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.gradle.util.GradleVersion
-import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 
 internal val Project.android
     get() = extensions.getByName<CommonExtension>("android")
@@ -39,25 +39,24 @@ internal val Project.testAggregationExtension: TestAggregationExtension
             modules.excludes.finalizeValueOnRead()
         }
 
+private fun String.asVersion() = GradleVersion.version(this)
+
 internal fun Project.ensureMinVersions() {
-    if (GradleVersion.current() < BuildConfig.MIN_GRADLE_VERSION) {
+    if (GradleVersion.current() < BuildConfig.MIN_GRADLE_VERSION.asVersion()) {
         error("This plugin requires Gradle ${BuildConfig.MIN_GRADLE_VERSION}} or later. Current is ${GradleVersion.current()}")
     }
-    if (agpVersion < BuildConfig.MIN_AGP_VERSION) {
+    if (agpVersion.asVersion() < BuildConfig.MIN_AGP_VERSION.asVersion()) {
         error("This plugin requires Gradle ${BuildConfig.MIN_AGP_VERSION} or later. Current is $agpVersion")
     }
 }
 
 private val agpVersion
-    get() = runCatching {
-        val (major, minor, patch) = ANDROID_GRADLE_PLUGIN_VERSION.split('.').map { it.toInt() }
-
-        AndroidPluginVersion(major, minor, patch)
-    }.getOrElse {
-        runCatching { CurrentAndroidGradlePluginVersion.CURRENT_AGP_VERSION }.getOrElse {
+    get() = runCatching { CurrentAndroidGradlePluginVersion.CURRENT_AGP_VERSION.version }.getOrElse { ex1 ->
+        runCatching { ANDROID_GRADLE_PLUGIN_VERSION }.getOrElse { ex2 ->
+            ex1.addSuppressed(ex2)
             throw IllegalStateException(
-                "Android Plugin is too old or it was not applied (or loaded in the same project than this one). This plugin requires Gradle ${BuildConfig.MIN_AGP_VERSION} or later",
-                it
+                "Failed to get current AGP version, ${BuildConfig.MIN_AGP_VERSION} or later is required.",
+                ex1
             )
         }
     }
@@ -79,9 +78,10 @@ internal fun Project.ensureItsNotJava() = plugins.withId("java-base") {
  */
 internal fun CommonExtension.shouldAggregate(variant: Variant) = sequence {
     yield(buildTypes[variant.buildType!!].aggregateTestCoverage)
-    yieldAll(variant.productFlavors.asSequence()
-        .map { (_, flavor) -> productFlavors[flavor] }
-        .map { it.aggregateTestCoverage })
+    yieldAll(
+        variant.productFlavors.asSequence()
+            .map { (_, flavor) -> productFlavors[flavor] }
+            .map { it.aggregateTestCoverage })
 }.mapNotNull { it.orNull }.fold(true) { acc, it -> acc && it }
 
 internal fun TestAggregationExtension.aggregateProject(
@@ -98,9 +98,6 @@ private fun TestAggregationExtension.Modules.includes(project: Project) =
 internal fun Project.unitTestTaskOf(variant: Variant) = (variant as? HasUnitTest)
     ?.unitTest
     ?.let { tasks.named<AbstractTestTask>("test${it.name.replaceFirstChar { it.uppercase() }}") }
-
-internal fun Project.unitTestTaskOf(target: KotlinTarget) =
-    tasks.named<AbstractTestTask>("${(target.disambiguationClassifier ?: target.name)}Test")
 
 internal val TaskProvider<AbstractTestTask>.execData
     get() = map {
