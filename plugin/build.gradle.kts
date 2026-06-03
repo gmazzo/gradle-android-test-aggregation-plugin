@@ -26,7 +26,7 @@ java.toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get
 samWithReceiver.annotation(HasImplicitReceiver::class.qualifiedName!!)
 
 kotlin {
-    abiValidation.enabled = true
+    abiValidation()
     explicitApi()
 }
 
@@ -194,7 +194,7 @@ tasks.validatePlugins {
 }
 
 tasks.check {
-    dependsOn(tasks.withType<JacocoReport>(), tasks.checkLegacyAbi)
+    dependsOn(tasks.withType<JacocoReport>())
 }
 
 tasks.withType<PublishToMavenRepository>().configureEach {
