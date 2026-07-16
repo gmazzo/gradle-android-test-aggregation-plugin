@@ -30,7 +30,7 @@ listOf(
 }
 
 dependencies {
-    ksp(libs.moshi.codegen)
+    "kspCommonMainMetadata"(libs.moshi.codegen)
     "androidMainImplementation"(libs.moshi.kotlin)
     "jvmMainImplementation"(libs.moshi.kotlin)
     commonTestImplementation(libs.kotlin.test)
