@@ -10,7 +10,7 @@ plugins {
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.example.login"
 
         compileSdk = libs.versions.android.compileSDK.get().toInt()

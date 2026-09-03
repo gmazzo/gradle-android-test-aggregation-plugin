@@ -22,7 +22,7 @@ android {
     }
 }
 
-val emulator by android.testOptions.managedDevices.localDevices.registering {
+val emulator = android.testOptions.managedDevices.localDevices.register("emulator") {
     device = "Pixel 6"
     apiLevel = 33
     systemImageSource = "aosp"

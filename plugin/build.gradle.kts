@@ -30,7 +30,7 @@ kotlin {
     explicitApi()
 }
 
-val kotlinTest by testing.suites.creating(JvmTestSuite::class)
+val kotlinTest = testing.suites.create<JvmTestSuite>("kotlinTest")
 
 val minGradleVersion = "8.13"
 val minAGPVersion = "8.1.0"
@@ -156,8 +156,8 @@ testing.suites.withType<JvmTestSuite> {
     useJUnitJupiter()
 }
 
-val test by sourceSets
-val testFixtures by sourceSets
+val test = sourceSets.getByName("test")
+val testFixtures = sourceSets.getByName("testFixtures")
 
 test.resources.srcDirs(
     dependencyMetadata("agp", dependencies.plugin(libs.plugins.android)),
