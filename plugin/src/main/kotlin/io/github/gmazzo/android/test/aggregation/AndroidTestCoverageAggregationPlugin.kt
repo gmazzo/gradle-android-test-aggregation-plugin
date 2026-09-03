@@ -33,6 +33,7 @@ import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.namedDomainObjectSet
 import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.provideDelegate
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.registering
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.Companion.MAIN_COMPILATION_NAME
@@ -60,10 +61,10 @@ public abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             })
         }
 
-        val codeCoverageExecutionData by configurations.creating {
+        val codeCoverageExecutionData = configurations.create("codeCoverageExecutionData") {
             isCanBeConsumed = true
             isCanBeResolved = false
-            isVisible = false
+
             attributes {
                 attribute(Usage.USAGE_ATTRIBUTE, objects.named(USAGE_TEST_AGGREGATION))
                 attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.VERIFICATION))
@@ -82,7 +83,7 @@ public abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             }
         }
 
-        val allVariantsSourcesForCoverageReport by tasks.registering(Sync::class) {
+        val allVariantsSourcesTask = tasks.register<Sync>("allVariantsSourcesForCoverageReport") {
             destinationDir = temporaryDir
             duplicatesStrategy = DuplicatesStrategy.INCLUDE // in case of duplicated classes
             jacocoVariants.all {
@@ -93,7 +94,7 @@ public abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
         configurations.create("codeCoverageSources") {
             isCanBeConsumed = true
             isCanBeResolved = false
-            isVisible = false
+
             attributes {
                 attribute(Usage.USAGE_ATTRIBUTE, objects.named(USAGE_TEST_AGGREGATION))
                 attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.VERIFICATION))
@@ -103,7 +104,7 @@ public abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
                     objects.named(VerificationType.MAIN_SOURCES)
                 )
             }
-            outgoing.artifact(allVariantsSourcesForCoverageReport) {
+            outgoing.artifact(allVariantsSourcesTask) {
                 type = ArtifactTypeDefinition.DIRECTORY_TYPE
             }
         }
@@ -112,7 +113,7 @@ public abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
         // So we create a unified classes dir, doing the best effort keeping the first of each variant
         val allVariantsJars = objects.listProperty<RegularFile>()
         val allVariantsDirs = objects.listProperty<Directory>()
-        val allVariantsClassesForCoverageReport by tasks.registering(Sync::class) {
+        val allVariantsClasses = tasks.register<Sync>("allVariantsClassesForCoverageReport") {
             from(allVariantsDirs)
             into(provider { temporaryDir })
             duplicatesStrategy = DuplicatesStrategy.INCLUDE // in case of duplicated classes
@@ -130,14 +131,14 @@ public abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
         jacocoVariants.all task@{
             artifacts
                 .forScope(ScopedArtifacts.Scope.PROJECT)
-                .use(allVariantsClassesForCoverageReport)
+                .use(allVariantsClasses)
                 .toGet(ScopedArtifact.CLASSES, { allVariantsJars }, { allVariantsDirs })
         }
 
         configurations.create("codeCoverageElements") {
             isCanBeConsumed = true
             isCanBeResolved = false
-            isVisible = false
+
             attributes {
                 attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
                 attribute(Usage.USAGE_ATTRIBUTE, objects.named(USAGE_TEST_AGGREGATION))
@@ -146,7 +147,7 @@ public abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
                     objects.named(LibraryElements.CLASSES)
                 )
             }
-            outgoing.artifact(allVariantsClassesForCoverageReport) {
+            outgoing.artifact(allVariantsClasses) {
                 type = ArtifactTypeDefinition.JVM_CLASS_DIRECTORY
             }
         }
@@ -155,8 +156,8 @@ public abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
             with(
                 KMPSupport(
                     codeCoverageExecutionData,
-                    allVariantsSourcesForCoverageReport,
-                    allVariantsClassesForCoverageReport,
+                    allVariantsSourcesTask,
+                    allVariantsClasses,
                 )
             ) { configure() }
         }

@@ -70,7 +70,7 @@ tasks.register<Sync>("collectExpectedReports") {
     into(aggregatedReportsSpecs)
 }
 
-val checkAggregatedReportsContent by tasks.registering(Sync::class) {
+val checkReportsTask = tasks.register<Sync>("checkAggregatedReportsContent") {
     outputs.upToDateWhen { false }
     with(reportsSpec) { into("actual") }
     into(temporaryDir)
@@ -105,5 +105,5 @@ val checkAggregatedReportsContent by tasks.registering(Sync::class) {
 }
 
 tasks.check {
-    dependsOn(tasks.jacocoAggregatedCoverageVerification, checkAggregatedReportsContent)
+    dependsOn(tasks.jacocoAggregatedCoverageVerification, checkReportsTask)
 }

@@ -9,6 +9,7 @@ import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.provideDelegate
@@ -53,7 +54,7 @@ public class TestCoverageAggregationPlugin : Plugin<Project> {
             sourceDirectories.from(reportTask.map { it.sourceDirectories })
         }
 
-        val jacocoAggregation by configurations
+        val jacocoAggregation = configurations.getByName("jacocoAggregation")
 
         allprojects {
             plugins.withId("java") {

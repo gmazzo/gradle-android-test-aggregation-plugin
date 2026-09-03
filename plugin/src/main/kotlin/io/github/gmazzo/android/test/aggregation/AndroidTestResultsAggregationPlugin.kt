@@ -23,7 +23,7 @@ public abstract class AndroidTestResultsAggregationPlugin : Plugin<Project> {
         val testResultsElements = configurations.create("testResultsElements") {
             isCanBeConsumed = true
             isCanBeResolved = false
-            isVisible = false
+
             attributes {
                 attribute(Usage.USAGE_ATTRIBUTE, objects.named(USAGE_TEST_AGGREGATION))
                 attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.VERIFICATION))
