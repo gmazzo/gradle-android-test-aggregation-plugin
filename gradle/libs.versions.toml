@@ -2,10 +2,10 @@
 java = "17"
 kotlin = "2.4.10"
 agp = "9.3.2"
-android-minSDK = "23"
+android-minSDK = "24"
 android-compileSDK = "37"
 androidx-lifecycle = "2.11.0"
-androidx-navigation = "2.9.8"
+androidx-navigation = "2.10.0"
 moshi = "1.15.2"
 
 [libraries]
