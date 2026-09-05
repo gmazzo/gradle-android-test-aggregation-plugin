@@ -9,6 +9,8 @@ apply(from = "gradle/shared.settings.gradle.kts")
 rootProject.name = "gradle-android-test-aggregation-plugin"
 
 includeBuild("plugin")
+include("test-project:jvm")
+include("test-project:jvm-no-coverage")
 include("demo-project:app")
 include("demo-project:domain")
 include("demo-project:login")
