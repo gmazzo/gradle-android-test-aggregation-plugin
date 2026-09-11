@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.myapplication.MainActivityTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-09-11T16:16:58.904Z" hostname="GV-M-D9F0WXL4X2" time="2.163">
+  <properties/>
+  <testcase name="shouldStart" classname="com.example.myapplication.MainActivityTest" time="1.935"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
