@@ -1,0 +1,68 @@
+package io.github.gmazzo.test.aggregation
+
+import com.android.build.api.extension.impl.CurrentAndroidGradlePluginVersion
+import com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
+import org.gradle.api.Action
+import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.plugins.ExtensionAware
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.property
+import org.gradle.kotlin.dsl.typeOf
+import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
+import org.gradle.util.GradleVersion
+
+private const val AGGREGATE_EXTENSION_NAME = "aggregateTests"
+
+internal fun Project.ensureMinVersions() {
+    if (GradleVersion.current() < GradleVersion.version(BuildConfig.MIN_GRADLE_VERSION)) {
+        error("This plugin requires Gradle ${BuildConfig.MIN_GRADLE_VERSION}} or later. Current is ${GradleVersion.current()}")
+    }
+    if (GradleVersion.version(agpVersion) < GradleVersion.version(BuildConfig.MIN_AGP_VERSION)) {
+        error("This plugin requires Gradle ${BuildConfig.MIN_AGP_VERSION} or later. Current is $agpVersion")
+    }
+}
+
+private val agpVersion
+    get() = runCatching { CurrentAndroidGradlePluginVersion.CURRENT_AGP_VERSION.version }.getOrElse { ex1 ->
+        runCatching { ANDROID_GRADLE_PLUGIN_VERSION }.getOrElse { ex2 ->
+            ex1.addSuppressed(ex2)
+            throw IllegalStateException(
+                "Failed to get current AGP version, ${BuildConfig.MIN_AGP_VERSION} or later is required.",
+                ex1
+            )
+        }
+    }
+
+@Suppress("UNCHECKED_CAST")
+internal fun ExtensionAware.aggregateTests(objects: ObjectFactory) =
+    when (val existing = extensions.findByName(AGGREGATE_EXTENSION_NAME)) {
+        null -> objects.property<Boolean>()
+            .convention(true)
+            .apply { finalizeValueOnRead() }
+            .also { aggregateTests = it }
+        else -> existing as Property<Boolean>
+    }
+
+@Suppress("UNCHECKED_CAST")
+internal var ExtensionAware.aggregateTests: Property<Boolean>
+    get() = extensions.getByName(AGGREGATE_EXTENSION_NAME) as Property<Boolean>
+    set(value) {
+        when (val existing = extensions.findByName(AGGREGATE_EXTENSION_NAME)) {
+            null -> extensions.add(typeOf<Property<Boolean>>(), AGGREGATE_EXTENSION_NAME, value)
+            else -> check(existing === value)
+        }
+    }
+
+internal val Task.coverageFile
+    get() = extensions.findByType<JacocoTaskExtension>()?.destinationFile
+
+internal val String.capitalized: String
+    get() = replaceFirstChar { it.uppercase() }
+
+@Suppress("UNCHECKED_CAST")
+internal fun <Type : Task> Project.lazyTask(name: String, configure: Action<Type> = {}): Provider<Type> =
+    provider { tasks.getByName(name, configure as Action<Task>) as Type }

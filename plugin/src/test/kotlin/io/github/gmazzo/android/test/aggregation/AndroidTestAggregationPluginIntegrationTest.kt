@@ -3,8 +3,8 @@
 package io.github.gmazzo.android.test.aggregation
 
 import com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
-import io.github.gmazzo.android.test.aggregation.BuildConfig.MIN_AGP_VERSION
-import io.github.gmazzo.android.test.aggregation.BuildConfig.MIN_GRADLE_VERSION
+import io.github.gmazzo.test.aggregation.BuildConfig.MIN_AGP_VERSION
+import io.github.gmazzo.test.aggregation.BuildConfig.MIN_GRADLE_VERSION
 import java.io.File
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.internal.PluginUnderTestMetadataReading.readImplementationClasspath
@@ -12,14 +12,15 @@ import org.gradle.util.GradleVersion
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments.of
 import org.junit.jupiter.params.provider.MethodSource
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AndroidTestAggregationPluginIntegrationTest {
 
     fun arguments() = listOf(
-        arrayOf(MIN_GRADLE_VERSION, MIN_AGP_VERSION),
-        arrayOf(GradleVersion.current().version, ANDROID_GRADLE_PLUGIN_VERSION),
+        of(MIN_GRADLE_VERSION, MIN_AGP_VERSION),
+        of(GradleVersion.current().version, ANDROID_GRADLE_PLUGIN_VERSION),
     )
 
     @ParameterizedTest(name = "gradle={0}, android={1}")
