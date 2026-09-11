@@ -49,15 +49,21 @@ tasks.jacocoAggregatedReport {
 }
 
 val reportsSpec = copySpec {
+    val dataSortRegEx = "\\bdata-sort-value=\"\\d+\"".toRegex()
     val tookRegEx = "\\b\\d+(?:\\.\\d+)?s\\b".toRegex()
 
-    from(tasks.jacocoAggregatedReport) { include("**/*.csv") }
-    from(tasks.testAggregatedReport) {
-        into("tests")
-        filter {
-            when {
-                it.startsWith("<a href=\"http://www.gradle.org\">") -> ""
-                else -> it.replace(tookRegEx, "0.100s")
+    into("coverage") {
+        from(tasks.jacocoAggregatedReport) { include("**/*.csv") }
+    }
+    into("tests") {
+        from(tasks.testAggregatedReport) {
+            filter {
+                when {
+                    it.startsWith("<a href=\"https://www.gradle.org\">") -> ""
+                    else -> it
+                        .replace(dataSortRegEx, "data-sort-value=\"100\"")
+                        .replace(tookRegEx, "0.100s")
+                }
             }
         }
     }
@@ -72,7 +78,12 @@ tasks.register<Sync>("collectExpectedReports") {
 
 val checkReportsTask = tasks.register<Sync>("checkAggregatedReportsContent") {
     outputs.upToDateWhen { false }
-    with(reportsSpec) { into("actual") }
+    into("expects") {
+        from(aggregatedReportsSpecs)
+    }
+    into("actual") {
+        with(reportsSpec)
+    }
     into(temporaryDir)
     doLast {
         fun File.collect() = walkTopDown()
@@ -92,7 +103,7 @@ val checkReportsTask = tasks.register<Sync>("checkAggregatedReportsContent") {
                     expectedLines,
                     DiffUtils.diff(expectedLines, actualLines),
                     3
-                )
+                ).joinToString("\n")
             }
         }
         check(diff.isEmpty()) {
