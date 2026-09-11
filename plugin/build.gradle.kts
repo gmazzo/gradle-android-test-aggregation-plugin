@@ -51,6 +51,23 @@ gradlePlugin {
 
     testSourceSets += kotlinTest.sources
 
+    plugins.create("test-aggregation") {
+        id = "io.github.gmazzo.test.aggregation"
+        displayName = name
+        implementationClass = "io.github.gmazzo.test.aggregation.TestAggregationPlugin"
+        description = "Simple test aggregation support for Android/JVM modules"
+        tags.addAll(
+            "android",
+            "agp",
+            "coverage",
+            "jacoco",
+            "test",
+            "aggregation",
+            "test-report-aggregation",
+            "jacoco-report-aggregation"
+        )
+    }
+
     plugins.create("test-coverage-aggregation") {
         id = "io.github.gmazzo.test.aggregation.coverage"
         displayName = name

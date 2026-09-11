@@ -8,6 +8,7 @@ import org.gradle.api.attributes.Usage
 import org.gradle.kotlin.dsl.USAGE_TEST_AGGREGATION
 import org.gradle.kotlin.dsl.add
 
+@Deprecated(OLD_API_DEPRECATION_MESSAGE)
 internal class UsageTestAggregationCompatibilityRule : AttributeCompatibilityRule<Usage> {
 
     override fun execute(details: CompatibilityCheckDetails<Usage>) = with(details) {

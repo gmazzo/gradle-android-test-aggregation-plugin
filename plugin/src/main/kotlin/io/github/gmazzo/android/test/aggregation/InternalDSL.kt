@@ -24,12 +24,15 @@ import org.gradle.kotlin.dsl.testAggregation
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.gradle.util.GradleVersion
 
+@Deprecated(OLD_API_DEPRECATION_MESSAGE)
 internal val Project.android
     get() = extensions.getByName<CommonExtension>("android")
 
+@Deprecated(OLD_API_DEPRECATION_MESSAGE)
 internal val Project.androidComponents
     get() = extensions.getByName<AndroidComponentsExtension<*, *, *>>("androidComponents")
 
+@Deprecated(OLD_API_DEPRECATION_MESSAGE)
 internal val Project.testAggregationExtension: TestAggregationExtension
     get() = extensions.findByType()
         ?: extensions.create<TestAggregationExtension>("testAggregation").apply {
@@ -39,6 +42,7 @@ internal val Project.testAggregationExtension: TestAggregationExtension
 
 private fun String.asVersion() = GradleVersion.version(this)
 
+@Deprecated(OLD_API_DEPRECATION_MESSAGE)
 internal fun Project.ensureMinVersions() {
     if (GradleVersion.current() < BuildConfig.MIN_GRADLE_VERSION.asVersion()) {
         error("This plugin requires Gradle ${BuildConfig.MIN_GRADLE_VERSION}} or later. Current is ${GradleVersion.current()}")
@@ -59,6 +63,7 @@ private val agpVersion
         }
     }
 
+@Deprecated(OLD_API_DEPRECATION_MESSAGE)
 internal fun Project.ensureItsNotJava() = plugins.withId("java-base") {
     error("This plugin can not work with `java` plugin as well. It's recommended to apply it at the root project with at most the `base` plugin")
 }
@@ -74,6 +79,7 @@ internal fun Project.ensureItsNotJava() = plugins.withId("java-base") {
  * - If any component of the variant says `false` (and other says nothing `null`), then `false`
  * - If no component says anything (`null`), then `true` (because its `BuildType` has `enableUnitTestCoverage = true`)
  */
+@Deprecated(OLD_API_DEPRECATION_MESSAGE)
 internal fun CommonExtension.shouldAggregate(variant: Variant) = sequence {
     yield(buildTypes[variant.buildType!!].aggregateTestCoverage)
     yieldAll(
@@ -82,6 +88,7 @@ internal fun CommonExtension.shouldAggregate(variant: Variant) = sequence {
             .map { it.aggregateTestCoverage })
 }.mapNotNull { it.orNull }.fold(true) { acc, it -> acc && it }
 
+@Deprecated(OLD_API_DEPRECATION_MESSAGE)
 internal fun TestAggregationExtension.aggregateProject(
     project: Project,
     config: Configuration
@@ -93,10 +100,12 @@ private fun TestAggregationExtension.Modules.includes(project: Project) =
     (includes.get()
         .isEmpty() || project.path in includes.get()) && project.path !in excludes.get()
 
+@Deprecated(OLD_API_DEPRECATION_MESSAGE)
 internal fun Project.unitTestTaskOf(variant: Variant) = (variant as? HasUnitTest)
     ?.unitTest
     ?.let { tasks.named<AbstractTestTask>("test${it.name.replaceFirstChar { it.uppercase() }}") }
 
+@Deprecated(OLD_API_DEPRECATION_MESSAGE)
 internal val TaskProvider<AbstractTestTask>.execData
     get() = map {
         when (it) {

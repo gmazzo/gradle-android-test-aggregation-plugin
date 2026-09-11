@@ -15,6 +15,7 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.plugin.KotlinTargetsContainer
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
+@Deprecated(OLD_API_DEPRECATION_MESSAGE)
 internal abstract class AndroidTestBaseAggregationPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {

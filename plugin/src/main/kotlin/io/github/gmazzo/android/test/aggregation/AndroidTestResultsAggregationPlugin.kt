@@ -15,6 +15,7 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.named
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
+@Deprecated(OLD_API_DEPRECATION_MESSAGE)
 public abstract class AndroidTestResultsAggregationPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {

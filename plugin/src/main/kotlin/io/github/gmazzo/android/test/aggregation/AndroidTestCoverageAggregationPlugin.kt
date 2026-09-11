@@ -25,20 +25,17 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.USAGE_TEST_AGGREGATION
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.creating
 import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.namedDomainObjectSet
 import org.gradle.kotlin.dsl.property
-import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.register
-import org.gradle.kotlin.dsl.registering
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.Companion.MAIN_COMPILATION_NAME
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
+@Deprecated(OLD_API_DEPRECATION_MESSAGE)
 public abstract class AndroidTestCoverageAggregationPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {

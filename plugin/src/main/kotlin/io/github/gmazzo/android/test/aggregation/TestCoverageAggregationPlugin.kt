@@ -9,18 +9,18 @@ import org.gradle.api.tasks.util.PatternFilterable
 import org.gradle.api.tasks.util.PatternSet
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.getValue
-import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.register
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.testing.jacoco.plugins.JacocoCoverageReport
 import org.gradle.testing.jacoco.tasks.JacocoCoverageVerification
 
+@Deprecated(OLD_API_DEPRECATION_MESSAGE)
 public class TestCoverageAggregationPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {
+        deprecationNotice("io.github.gmazzo.test.aggregation.coverage")
+
         ensureMinVersions()
         ensureItsNotJava()
 

@@ -7,15 +7,14 @@ import org.gradle.api.tasks.SourceSet.TEST_SOURCE_SET_NAME
 import org.gradle.api.tasks.testing.AggregateTestReport
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.getValue
-import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 
-public class TestResultsAggregationPlugin : Plugin<Project> {
+@Deprecated(OLD_API_DEPRECATION_MESSAGE)
+public class TestResultsAggregationPlugin  : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {
+        deprecationNotice("io.github.gmazzo.test.aggregation.results")
         ensureMinVersions()
         ensureItsNotJava()
 
