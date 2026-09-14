@@ -120,7 +120,7 @@ public final class io/github/gmazzo/test/aggregation/TestAggregationPlugin : org
 }
 
 public abstract interface class io/github/gmazzo/test/aggregation/TestAggregationReport : org/gradle/api/reporting/ReportSpec {
-	public abstract fun getAggregateFrom ()Lorg/gradle/api/artifacts/Configuration;
+	public abstract fun getAggregateFrom ()Lorg/gradle/api/NamedDomainObjectProvider;
 	public abstract fun getReportTask ()Lorg/gradle/api/tasks/TaskProvider;
 	public abstract fun getVariants ()Lorg/gradle/api/NamedDomainObjectContainer;
 }
