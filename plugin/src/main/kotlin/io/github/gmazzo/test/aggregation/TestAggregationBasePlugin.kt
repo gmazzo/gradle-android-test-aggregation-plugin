@@ -68,9 +68,10 @@ public class TestAggregationBasePlugin @Inject constructor(
             }
         }
 
-        val jacocoAntClasspath = configurations.resolvable("aggregatedTestCoverageJacocoAntClasspath") {
-            extendsFrom(jacocoAntConfig)
-        }
+        val jacocoAntClasspath =
+            configurations.resolvable("aggregatedTestCoverageJacocoAntClasspath") {
+                extendsFrom(jacocoAntConfig)
+            }
 
         dependencies {
             jacocoAntConfig(BuildConfig.JACOCO_ANT_DEPENDENCY.run { "$first:$second" })
@@ -147,7 +148,7 @@ public class TestAggregationBasePlugin @Inject constructor(
 
                     dependsOn(filteredVariants.map { it.dependsOn })
                     variants.addAll(this@report.filteredVariants.map { it.isolated })
-                    variants.addAll(this@report.aggregateFromVariants)
+                    variants.addAll(this@report.variantsFromDependencies)
                     htmlOutputLocation.value(this@report.htmlOutputLocation)
                     junitXMLOutputLocation.value(this@report.junitXMLOutputLocation)
                 }
@@ -206,7 +207,7 @@ public class TestAggregationBasePlugin @Inject constructor(
 
                     dependsOn(filteredVariants.map { it.dependsOn })
                     variants.addAll(this@report.filteredVariants.map { it.isolated })
-                    variants.addAll(this@report.aggregateFromVariants)
+                    variants.addAll(this@report.variantsFromDependencies)
                     jacocoClasspath.from(jacocoAntClasspath)
                     htmlOutputLocation.value(this@report.htmlOutputLocation)
                     xmlOutputLocation.value(this@report.xmlOutputLocation)
@@ -222,11 +223,12 @@ public class TestAggregationBasePlugin @Inject constructor(
 
     context(project: Project, report: TestAggregationCoverageReport)
     private val TestAggregationCoverageReport.Variant.isolated
-        get() = project.objects.newInstance<TestAggregationCoverageReport.Variant>(this@isolated.name).apply new@{
-            this@new.sources.from(this@isolated.sources).disallowChanges()
-            this@new.classes.from(this@isolated.classes.contentFiltered).disallowChanges()
-            this@new.coverageData.from(this@isolated.coverageData).disallowChanges()
-        }
+        get() = project.objects.newInstance<TestAggregationCoverageReport.Variant>(this@isolated.name)
+            .apply new@{
+                this@new.sources.from(this@isolated.sources).disallowChanges()
+                this@new.classes.from(this@isolated.classes.contentFiltered).disallowChanges()
+                this@new.coverageData.from(this@isolated.coverageData).disallowChanges()
+            }
 
     context(project: Project)
     private fun AbstractTestAggregationReport<*, *>.configure() {
@@ -244,7 +246,7 @@ public class TestAggregationBasePlugin @Inject constructor(
                 attribute(USAGE_ATTRIBUTE, usage)
                 attribute(REPORT_ATTRIBUTE, this@configure.name)
             }
-        }.get()
+        }
 
         val variantsFile = project.providers.of(VariantsFileValueSource::class.java) {
             parameters {
@@ -257,7 +259,7 @@ public class TestAggregationBasePlugin @Inject constructor(
         }
 
         project.configurations.consumable(this@configure.name) config@{
-            attributes { allOf(aggregateFrom) }
+            attributes { allOf(aggregateFrom.get()) }
             outgoing {
                 variants.create("variants-spec") {
                     attributes {
@@ -330,60 +332,69 @@ public class TestAggregationBasePlugin @Inject constructor(
     }
 
     context(project: Project)
-    private val TestAggregationResultsReport.aggregateFromVariants
-        get() = aggregateFrom().artifacts.flatMap { artifact ->
-            val projectPath = artifact.projectPath
+    private val TestAggregationResultsReport.variantsFromDependencies
+        get() = aggregateFrom().map { av ->
+            av.artifacts.flatMap { artifact ->
+                val projectPath = artifact.projectPath
 
-            artifact.file.readLines().map { variantName ->
-                val depsBinaryData = aggregateFrom {
-                    attribute(REPORT_VARIANT_ATTRIBUTE, variantName)
-                    attribute(VERIFICATION_TYPE_ATTRIBUTE, project.objects.named(TEST_RESULTS))
-                }.files
+                artifact.file.readLines().map { variantName ->
+                    val depsBinaryData = aggregateFrom {
+                        attribute(REPORT_VARIANT_ATTRIBUTE, variantName)
+                        attribute(VERIFICATION_TYPE_ATTRIBUTE, project.objects.named(TEST_RESULTS))
+                    }.map { it.files }
 
-                project.objects.newInstance<TestAggregationResultsReport.Variant>("$projectPath:$variantName")
-                    .apply {
-                        aggregate.disallowChanges()
-                        dependsOn.value(setOf(depsBinaryData)).disallowChanges()
-                        binaryData.from(depsBinaryData).disallowChanges()
-                    }
+                    project.objects.newInstance<TestAggregationResultsReport.Variant>("$projectPath:$variantName")
+                        .apply {
+                            aggregate.disallowChanges()
+                            dependsOn.value(setOf(depsBinaryData)).disallowChanges()
+                            binaryData.from(depsBinaryData).disallowChanges()
+                        }
+                }
             }
         }
 
     context(project: Project)
-    private val TestAggregationCoverageReport.aggregateFromVariants
-        get() = aggregateFrom().artifacts.flatMap { artifact ->
-            val projectPath = artifact.projectPath
-            val variants = artifact.file.readLines()
+    private val TestAggregationCoverageReport.variantsFromDependencies
+        get() = aggregateFrom().map { av ->
+            av.artifacts.flatMap { artifact ->
+                val projectPath = artifact.projectPath
+                val variants = artifact.file.readLines()
 
-            variants.map { variantName ->
-                val depsSources = aggregateFrom {
-                    attribute(REPORT_VARIANT_ATTRIBUTE, variantName)
-                    attribute(VERIFICATION_TYPE_ATTRIBUTE, project.objects.named(MAIN_SOURCES))
-                }.files
+                variants.map { variantName ->
+                    val depsSources = aggregateFrom {
+                        attribute(REPORT_VARIANT_ATTRIBUTE, variantName)
+                        attribute(VERIFICATION_TYPE_ATTRIBUTE, project.objects.named(MAIN_SOURCES))
+                    }.map { it.files }
 
-                val depsClasses = aggregateFrom {
-                    attribute(REPORT_VARIANT_ATTRIBUTE, variantName)
-                    attribute(LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(CLASSES))
-                }.files.contentFiltered
+                    val depsClasses = aggregateFrom {
+                        attribute(REPORT_VARIANT_ATTRIBUTE, variantName)
+                        attribute(LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(CLASSES))
+                    }.map { it.files.contentFiltered }
 
-                val depsCoverageData = aggregateFrom {
-                    attribute(REPORT_VARIANT_ATTRIBUTE, variantName)
-                    attribute(VERIFICATION_TYPE_ATTRIBUTE, project.objects.named(JACOCO_RESULTS))
-                }.files
+                    val depsCoverageData = aggregateFrom {
+                        attribute(REPORT_VARIANT_ATTRIBUTE, variantName)
+                        attribute(
+                            VERIFICATION_TYPE_ATTRIBUTE,
+                            project.objects.named(JACOCO_RESULTS)
+                        )
+                    }.map { it.files }
 
-                val aggregatedName = when (variants.size) {
-                    1 -> projectPath
-                    else -> "$projectPath:$variantName"
-                }
-                project.objects.newInstance<TestAggregationCoverageReport.Variant>(aggregatedName)
-                    .apply {
-                        aggregate.disallowChanges()
-                        dependsOn.value(setOf(depsSources, depsClasses, depsCoverageData))
-                            .disallowChanges()
-                        sources.from(depsSources).disallowChanges()
-                        classes.from(depsClasses).disallowChanges()
-                        coverageData.from(depsCoverageData).disallowChanges()
+                    val aggregatedName = when (variants.size) {
+                        1 -> projectPath
+                        else -> "$projectPath:$variantName"
                     }
+                    project.objects.newInstance<TestAggregationCoverageReport.Variant>(
+                        aggregatedName
+                    )
+                        .apply {
+                            aggregate.disallowChanges()
+                            dependsOn.value(setOf(depsSources, depsClasses, depsCoverageData))
+                                .disallowChanges()
+                            sources.from(depsSources).disallowChanges()
+                            classes.from(depsClasses).disallowChanges()
+                            coverageData.from(depsCoverageData).disallowChanges()
+                        }
+                }
             }
         }
 
@@ -392,9 +403,11 @@ public class TestAggregationBasePlugin @Inject constructor(
         forAttrs: Action<AttributeContainer> = {
             attribute(VERIFICATION_TYPE_ATTRIBUTE, project.objects.named(TYPE_VARIANTS_LIST))
         },
-    ) = aggregateFrom.incoming.artifactView {
-        componentFilter { it is ProjectComponentIdentifier }
-        forAttrs.execute(attributes)
+    ) = aggregateFrom.map {
+        it.incoming.artifactView {
+            componentFilter { it is ProjectComponentIdentifier }
+            forAttrs.execute(attributes)
+        }
     }
 
     @Suppress("UNCHECKED_CAST")

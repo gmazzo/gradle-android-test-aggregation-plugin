@@ -3,8 +3,9 @@ package io.github.gmazzo.test.aggregation
 import io.github.gmazzo.test.aggregation.TestAggregationReport.BaseVariant
 import org.gradle.api.Named
 import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Task
-import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.ResolvableConfiguration
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.reporting.ReportSpec
@@ -14,7 +15,7 @@ public interface TestAggregationReport<Variant : BaseVariant, ReportTask : Task>
 
     public val variants: NamedDomainObjectContainer<Variant>
 
-    public val aggregateFrom: Configuration
+    public val aggregateFrom: NamedDomainObjectProvider<ResolvableConfiguration>
 
     public val reportTask: TaskProvider<ReportTask>
 

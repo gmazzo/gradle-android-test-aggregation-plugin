@@ -21,14 +21,12 @@ public class TestAggregationPlugin : Plugin<Project> {
         apply<TestAggregationBasePlugin>()
 
         val reporting = the<ReportingExtension>()
-        val aggregateConfig = configurations.dependencyScope("aggregateTestsFrom") {
-            dependencies.all { isTransitive = false } // we only want direct results
-        }
+        val aggregateConfig = configurations.dependencyScope("aggregateTestsFrom")
         val testResults = reporting.reports.create<TestAggregationResultsReport>(DEFAULT_RESULTS_NAME) {
-            aggregateFrom.extendsFrom(aggregateConfig)
+            aggregateFrom.configure { extendsFrom(aggregateConfig.get()) }
         }
         val testCoverage = reporting.reports.create<TestAggregationCoverageReport>(DEFAULT_COVERAGE_NAME) {
-            aggregateFrom.extendsFrom(aggregateConfig)
+            aggregateFrom.configure { extendsFrom(aggregateConfig.get()) }
         }
 
         plugins.withId("java") {
