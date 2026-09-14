@@ -29,7 +29,7 @@ public class TestAggregationPlugin : Plugin<Project> {
             aggregateFrom.configure { extendsFrom(aggregateConfig.get()) }
         }
 
-        plugins.withId("java") {
+        plugins.withId("jvm-test-suite") {
             val suites = the<TestingExtension>().suites
 
             suites.withType<JvmTestSuite> suite@{

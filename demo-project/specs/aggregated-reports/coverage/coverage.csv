@@ -25,6 +25,7 @@ aggregatedTestCoverageReport/:demo-project:kmp:jvm,com.example.kmp,MoshiObjJVM,1
 aggregatedTestCoverageReport/:demo-project:kmp:jvm,com.example.kmp,KMPObjectJVM,0,5,0,0,0,1,0,2,0,2
 aggregatedTestCoverageReport/:demo-project:kmp:jvm,com.example.kmp,PlatformKt,0,5,0,0,0,1,0,2,0,2
 aggregatedTestCoverageReport/:demo-project:login,com.example.login,LoggedInUserView,9,0,0,0,2,0,2,0,2,0
+aggregatedTestCoverageReport/:demo-project:login,com.example.login,LoginComposeViewKt,6,0,0,0,2,0,1,0,1,0
 aggregatedTestCoverageReport/:demo-project:login,com.example.login,LoginFormState,42,0,0,0,5,0,5,0,5,0
 aggregatedTestCoverageReport/:demo-project:login,com.example.login,LoginActivityKt,8,0,0,0,2,0,1,0,1,0
 aggregatedTestCoverageReport/:demo-project:login,com.example.login,LoginActivity,266,0,14,0,62,0,17,0,10,0

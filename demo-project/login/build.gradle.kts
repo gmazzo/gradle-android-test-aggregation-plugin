@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.lib)
+    alias(libs.plugins.kotlin.compose)
     id("io.github.gmazzo.test.aggregation")
 }
 
@@ -36,9 +37,18 @@ android {
             )
         }
     }
+
+    testOptions {
+        screenshotTests.create("screenshotTest") {
+            engineVersion = libs.versions.screenshot.tests.get()
+        }
+    }
 }
 
 dependencies {
+    api(platform(libs.androidx.compose))
+
+    implementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
     implementation(libs.google.material)
@@ -51,4 +61,7 @@ dependencies {
 
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.androidx.test.espresso)
+
+    "screenshotTestImplementation"(libs.androidx.compose.ui.tooling)
+    "screenshotTestImplementation"(libs.android.tools.screenshot.validation.api)
 }

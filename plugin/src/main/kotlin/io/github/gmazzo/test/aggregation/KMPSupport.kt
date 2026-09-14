@@ -87,12 +87,11 @@ internal object KMPSupport {
                 }
 
                 is KotlinTargetWithBinaries<*, *> -> {
-                    val testTask = target.project.provider {
-                        listOfNotNull(target.project.tasks.findByName("${target.disambiguationClassifier}Test") as AbstractTestTask?)
-                    }
+                    val testTasks = target.project
+                        .tasksMatching<AbstractTestTask>(name = "${target.disambiguationClassifier}Test")
 
-                    variant.dependsOn(testTask)
-                    variant.binaryData.from(testTask.map { t -> t.map { it.binaryResultsDirectory } })
+                    variant.dependsOn(testTasks)
+                    variant.binaryData.from(testTasks.map { t -> t.map { it.binaryResultsDirectory } })
                 }
 
                 else -> error("Test aggregation is only supported for targets with tests, but ${target.name} does not have any test runs")

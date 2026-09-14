@@ -35,7 +35,7 @@ private val agpVersion
                 ex1
             )
         }
-    }
+    }.replace("-.*$".toRegex(), "")
 
 @Suppress("UNCHECKED_CAST")
 internal fun ExtensionAware.aggregateTests(objects: ObjectFactory) =
@@ -44,6 +44,7 @@ internal fun ExtensionAware.aggregateTests(objects: ObjectFactory) =
             .convention(true)
             .apply { finalizeValueOnRead() }
             .also { aggregateTests = it }
+
         else -> existing as Property<Boolean>
     }
 
@@ -64,5 +65,16 @@ internal val String.capitalized: String
     get() = replaceFirstChar { it.uppercase() }
 
 @Suppress("UNCHECKED_CAST")
-internal fun <Type : Task> Project.lazyTask(name: String, configure: Action<Type> = {}): Provider<Type> =
-    provider { tasks.getByName(name, configure as Action<Task>) as Type }
+internal fun <Type : Task> Project.tasksMatching(
+    name: String,
+    configure:
+    Action<Type> = {},
+) = tasksMatching(Regex.fromLiteral(name), configure)
+
+@Suppress("UNCHECKED_CAST")
+internal fun <Type : Task> Project.tasksMatching(
+    regex: Regex,
+    configure:
+    Action<Type> = {},
+): Provider<List<Type>> = provider { tasks.names.filter { it.matches(regex) } }
+    .map { names -> names.mapNotNull(tasks::findByName) as List<Type> }
