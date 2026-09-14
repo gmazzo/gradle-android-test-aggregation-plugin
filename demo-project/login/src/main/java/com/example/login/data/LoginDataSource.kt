@@ -1,6 +1,6 @@
-package com.example.login.ui.data
+package com.example.login.data
 
-import com.example.login.ui.data.model.LoggedInUser
+import com.example.login.data.model.LoggedInUser
 import java.io.IOException
 import java.util.UUID
 

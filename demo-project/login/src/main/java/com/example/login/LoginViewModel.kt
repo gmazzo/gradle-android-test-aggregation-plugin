@@ -1,12 +1,11 @@
-package com.example.login.ui.login
+package com.example.login
 
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.login.R
-import com.example.login.ui.data.LoginRepository
-import com.example.login.ui.data.Result
+import com.example.login.data.LoginRepository
+import com.example.login.data.Result
 
 class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
 

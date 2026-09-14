@@ -1,4 +1,4 @@
-package com.example.login.ui.login.excluded
+package com.example.login.excluded
 
 class ClassToBeExcluded {
 

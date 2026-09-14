@@ -1,4 +1,4 @@
-package com.example.login.ui.data
+package com.example.login.data
 
 import org.junit.Assert.assertNotNull
 import org.junit.Test

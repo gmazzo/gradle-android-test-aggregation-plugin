@@ -1,4 +1,4 @@
-package com.example.login.ui.login
+package com.example.login
 
 import android.app.Activity
 import android.os.Bundle
@@ -12,7 +12,6 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.login.R
 import com.example.login.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
