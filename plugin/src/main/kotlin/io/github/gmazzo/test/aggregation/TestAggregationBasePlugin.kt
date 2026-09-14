@@ -333,12 +333,12 @@ public class TestAggregationBasePlugin @Inject constructor(
 
     context(project: Project)
     private val TestAggregationResultsReport.variantsFromDependencies
-        get() = aggregateFrom().map { av ->
-            av.artifacts.flatMap { artifact ->
+        get() = aggregateFrom().map { view ->
+            view.artifacts.flatMap { artifact ->
                 val projectPath = artifact.projectPath
 
                 artifact.file.readLines().map { variantName ->
-                    val depsBinaryData = aggregateFrom {
+                    val depsBinaryData = aggregateFrom(artifact) {
                         attribute(REPORT_VARIANT_ATTRIBUTE, variantName)
                         attribute(VERIFICATION_TYPE_ATTRIBUTE, project.objects.named(TEST_RESULTS))
                     }.map { it.files }
@@ -355,23 +355,23 @@ public class TestAggregationBasePlugin @Inject constructor(
 
     context(project: Project)
     private val TestAggregationCoverageReport.variantsFromDependencies
-        get() = aggregateFrom().map { av ->
-            av.artifacts.flatMap { artifact ->
+        get() = aggregateFrom().map { view ->
+            view.artifacts.flatMap { artifact ->
                 val projectPath = artifact.projectPath
                 val variants = artifact.file.readLines()
 
                 variants.map { variantName ->
-                    val depsSources = aggregateFrom {
+                    val depsSources = aggregateFrom(artifact) {
                         attribute(REPORT_VARIANT_ATTRIBUTE, variantName)
                         attribute(VERIFICATION_TYPE_ATTRIBUTE, project.objects.named(MAIN_SOURCES))
                     }.map { it.files }
 
-                    val depsClasses = aggregateFrom {
+                    val depsClasses = aggregateFrom(artifact) {
                         attribute(REPORT_VARIANT_ATTRIBUTE, variantName)
                         attribute(LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(CLASSES))
                     }.map { it.files.contentFiltered }
 
-                    val depsCoverageData = aggregateFrom {
+                    val depsCoverageData = aggregateFrom(artifact) {
                         attribute(REPORT_VARIANT_ATTRIBUTE, variantName)
                         attribute(
                             VERIFICATION_TYPE_ATTRIBUTE,
@@ -383,9 +383,8 @@ public class TestAggregationBasePlugin @Inject constructor(
                         1 -> projectPath
                         else -> "$projectPath:$variantName"
                     }
-                    project.objects.newInstance<TestAggregationCoverageReport.Variant>(
-                        aggregatedName
-                    )
+                    project.objects
+                        .newInstance<TestAggregationCoverageReport.Variant>(aggregatedName)
                         .apply {
                             aggregate.disallowChanges()
                             dependsOn.value(setOf(depsSources, depsClasses, depsCoverageData))
@@ -400,12 +399,16 @@ public class TestAggregationBasePlugin @Inject constructor(
 
     context(project: Project)
     private fun TestAggregationReport<*, *>.aggregateFrom(
+        forArtifact: ResolvedArtifactResult? = null,
         forAttrs: Action<AttributeContainer> = {
             attribute(VERIFICATION_TYPE_ATTRIBUTE, project.objects.named(TYPE_VARIANTS_LIST))
         },
-    ) = aggregateFrom.map {
-        it.incoming.artifactView {
-            componentFilter { it is ProjectComponentIdentifier }
+    ) = aggregateFrom.map { config ->
+        config.incoming.artifactView {
+            componentFilter {
+                it is ProjectComponentIdentifier &&
+                    (forArtifact == null || it.projectPath == forArtifact.projectPath)
+            }
             forAttrs.execute(attributes)
         }
     }

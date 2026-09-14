@@ -5,6 +5,12 @@ plugins {
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
 
+androidComponents {
+    onVariants {
+        it.aggregateTests = it.buildType == "debug"
+    }
+}
+
 android {
     namespace = "com.example.myapplication"
     buildFeatures.viewBinding = true
