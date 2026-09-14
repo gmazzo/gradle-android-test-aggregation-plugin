@@ -22,7 +22,16 @@ plugins {
 group = "io.github.gmazzo.test.aggregation"
 description = "Test Aggregation Plugin for Android"
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
+
+    registerFeature("antGrouping") {
+        usingSourceSet(sourceSets.maybeCreate("antGrouping"))
+        withSourcesJar()
+        withJavadocJar()
+    }
+}
+
 samWithReceiver.annotation(HasImplicitReceiver::class.qualifiedName!!)
 
 kotlin {
@@ -36,9 +45,12 @@ val minGradleVersion = "8.13"
 val minAGPVersion = "8.1.0"
 
 buildConfig {
-    packageName = "io.github.gmazzo.android.test.aggregation"
+    packageName = "io.github.gmazzo.test.aggregation"
     buildConfigField("MIN_GRADLE_VERSION", minGradleVersion)
     buildConfigField("MIN_AGP_VERSION", minAGPVersion)
+    buildConfigField("JACOCO_ANT_DEPENDENCY", libs.ant.jacoco.map { "${it.group}:${it.name}" to "${it.version}" })
+    buildConfigField("JACOCO_ANT_GROUPING_DEPENDENCY", provider { "${project.group}:${project.name}:${project.version}" })
+    buildConfigField("JACOCO_ANT_GROUPING_CAPABILITY", provider { "${project.group}:${project.name}-ant-grouping" })
 }
 
 val originUrl = providers
@@ -50,6 +62,23 @@ gradlePlugin {
     website = originUrl
 
     testSourceSets += kotlinTest.sources
+
+    plugins.create("test-aggregation") {
+        id = "io.github.gmazzo.test.aggregation"
+        displayName = name
+        implementationClass = "io.github.gmazzo.test.aggregation.TestAggregationPlugin"
+        description = "Simple test aggregation support for Android/JVM modules"
+        tags.addAll(
+            "android",
+            "agp",
+            "coverage",
+            "jacoco",
+            "test",
+            "aggregation",
+            "test-report-aggregation",
+            "jacoco-report-aggregation"
+        )
+    }
 
     plugins.create("test-coverage-aggregation") {
         id = "io.github.gmazzo.test.aggregation.coverage"
@@ -150,6 +179,9 @@ dependencies {
     "kotlinTestImplementation"(testFixtures(project))
     "kotlinTestImplementation"(plugin(libs.plugins.android))
     "kotlinTestImplementation"(plugin(libs.plugins.kotlin.multiplatform))
+
+    "antGroupingCompileOnly"(libs.ant)
+    "antGroupingCompileOnly"(libs.ant.jacoco)
 }
 
 testing.suites.withType<JvmTestSuite> {
@@ -191,6 +223,11 @@ afterEvaluate {
 
 tasks.validatePlugins {
     enableStricterValidation = true
+}
+
+tasks.jar {
+    // workaround for missing jar when consuming `libs/plugin-ant-grouping.jar` capability from demo build
+    dependsOn("antGroupingJar")
 }
 
 tasks.check {

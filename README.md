@@ -1,62 +1,66 @@
-![GitHub](https://img.shields.io/github/license/gmazzo/gradle-android-test-aggregation-plugin)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.gmazzo.test.aggregation.coverage/io.github.gmazzo.test.aggregation.coverage.gradle.plugin)](https://central.sonatype.com/artifact/io.github.gmazzo.test.aggregation.coverage/io.github.gmazzo.test.aggregation.coverage.gradle.plugin)
-[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/io.github.gmazzo.test.aggregation.coverage)](https://plugins.gradle.org/plugin/io.github.gmazzo.test.aggregation.coverage)
-[![Build Status](https://github.com/gmazzo/gradle-android-test-aggregation-plugin/actions/workflows/ci-cd.yaml/badge.svg)](https://github.com/gmazzo/gradle-android-test-aggregation-plugin/actions/workflows/ci-cd.yaml)
-[![Coverage](https://codecov.io/gh/gmazzo/gradle-android-test-aggregation-plugin/branch/main/graph/badge.svg?token=D5cDiPWvcS)](https://codecov.io/gh/gmazzo/gradle-android-test-aggregation-plugin)
-[![Users](https://img.shields.io/badge/users_by-Sourcegraph-purple)](https://sourcegraph.com/search?q=content:io.github.gmazzo.test.aggregation+-repo:github.com/gmazzo/gradle-android-test-aggregation-plugin)
+![GitHub](https://img.shields.io/github/license/gmazzo/gradle-tests-aggregation-plugin)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.gmazzo.test.aggregation/io.github.gmazzo.test.aggregation.gradle.plugin)](https://central.sonatype.com/artifact/io.github.gmazzo.test.aggregation/io.github.gmazzo.test.aggregation.gradle.plugin)
+[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/io.github.gmazzo.test.aggregation)](https://plugins.gradle.org/plugin/io.github.gmazzo.test.aggregation)
+[![Build Status](https://github.com/gmazzo/gradle-tests-aggregation-plugin/actions/workflows/ci-cd.yaml/badge.svg)](https://github.com/gmazzo/gradle-tests-aggregation-plugin/actions/workflows/ci-cd.yaml)
+[![Coverage](https://codecov.io/gh/gmazzo/gradle-tests-aggregation-plugin/branch/main/graph/badge.svg?token=D5cDiPWvcS)](https://codecov.io/gh/gmazzo/gradle-tests-aggregation-plugin)
+[![Users](https://img.shields.io/badge/users_by-Sourcegraph-purple)](https://sourcegraph.com/search?q=content:io.github.gmazzo.test.aggregation+-repo:github.com/gmazzo/gradle-tests-aggregation-plugin)
 
-[![Contributors](https://contrib.rocks/image?repo=gmazzo/gradle-android-test-aggregation-plugin)](https://github.com/gmazzo/gradle-android-test-aggregation-plugin/graphs/contributors)
+[![Contributors](https://contrib.rocks/image?repo=gmazzo/gradle-tests-aggregation-plugin)](https://github.com/gmazzo/gradle-tests-aggregation-plugin/graphs/contributors)
 
-# gradle-android-test-aggregation-plugin
+# gradle-tests-aggregation-plugin
 
-A couple of Gradle plugins to make Android modules work with
-[JaCoCo Report Aggregation Plugin](https://docs.gradle.org/current/userguide/jacoco_report_aggregation_plugin.html)
-and
-[Test Report Aggregation Plugin](https://docs.gradle.org/current/userguide/test_report_aggregation_plugin.html)
+A Gradle plugin to simplify test aggregations across multiple modules and its variants (e.g. JVM test suites, Android Variants or Kotlin Multiplatform's Targets) in Android projects.
+
+> [^NOTE]
+> *Disclaimer*: since version `3.x`, this plugin no longer relies on
+> [JaCoCo Report Aggregation Plugin](https://docs.gradle.org/current/userguide/jacoco_report_aggregation_plugin.html)
+> neither on [Test Report Aggregation Plugin](https://docs.gradle.org/current/userguide/test_report_aggregation_plugin.html)
+> due technical limitations of the Gradle API.
+> See [migration guide](MIGRATION-3.x.md) for more details.
 
 # Usage
 
-Apply the plugin at the **root** project:
+Apply the plugin on all the projects that needs to be aggregated and/or at the root one:
 
 ```kotlin
 plugins {
-    id("io.github.gmazzo.test.aggregation.coverage") version "<latest>"
-    // and/or
-    id("io.github.gmazzo.test.aggregation.results") version "<latest>"
+    id("io.github.gmazzo.test.aggregation") version "<latest>"
 }
 ```
 
-> [!NOTE]
-> This plugin can not be applied along with the `java` one because it conflicts.
-> If you have a Java root project, it's recommended to move it to a dedicated module
+Then use the `aggregatedTestReport` to generate the reports (at its default locations):
+- `build/reports/aggregated-test-coverage` for coverage
+- `build/reports/aggregated-test-results` for test results
 
-The `jacocoAggregatedReport` (for `coverage`) and `testAggregatedReport` (for `results`) will be
-created
-to aggregate test results from all projects in the build
+The plugin will automatically detect and aggregate:
+- For `java` projects:
+  - Any `JvmTestSuite` will be automatically aggregated
+  - For coverage:
+    - The `jacoco` plugin is required
+    - Because API limitations, only the default `test` jvm suite will be automatically computed
+    - You can register further jvm suites through the `io.github.gmazzo.test.aggregation.TestAggregationCoverageReport.addTestSuite` API
+- For `com.android.application`, `com.android.library` and `com.android.library.multiplatform` projects:
+  - Any `Variant` which its `BuilType` has `enableUnitTestCoverage = true` configured
+  - Any `Variant` with either `HostTest` or `DeviceTest` test components
+- For `org.jetbrains.kotlin.multiplatform` projects:
+  - Any `KotlinTarget` that with tests. Coverage is only supported for JVM-based ones.
 
-The following is the old README.me of the demo project of
-my [Medium article](https://medium.com/p/53e912b2e63c) about this topic,
-now promoted to dedicated Gradle plugins:
-[io.github.gmazzo.test.aggregation.coverage](https://plugins.gradle.org/plugin/io.github.gmazzo.test.aggregation.coverage)
-and
-[io.github.gmazzo.test.aggregation.results](https://plugins.gradle.org/plugin/io.github.gmazzo.test.aggregation.results)
+## Aggregating other modules
 
-## Filtering content
+Besides the variants of a single module, you can also aggregate test results and coverage
+from other modules of the build in a single root report.
 
-The plugins will automatically aggregate `android` modules and `java` modules that also apply
-`jacoco` plugin on the
-`jacocoAggregation` and the `testReportAggregation` configurations.
-
-You control which projects are effectively included by using the DSL:
-
+For this, you can use the `aggregateTestsFrom` configuration to declare a dependency to the modules
+to be aggregated:
 ```kotlin
-testAggregation {
-    modules {
-        include(project(":app"))
-        exclude(projects.lib) // typesafe accessors are also supported!
-    }
+dependencies {
+    aggregateTestsFrom(project(":foo"))
+    aggregateTestsFrom(project(":bar"))
 }
 ```
+> [^IMPORTANT]
+> Keep in mind that every referenced module must also apply the plugin,
+> the report will fail otherwise.
 
 ## Filtering coverage classes
 
@@ -64,131 +68,69 @@ You can use the DSL to include/exclude `.class` **files** from the aggregated Ja
 report:
 
 ```kotlin
-testAggregation {
-    coverage {
-        include("com/**/Login*") // will only include classes starting with `com.` containing `Login` on its name
-    }
+reporting.reports.withType<TestAggregationCoverageReport>().configureEach {
+  content {
+    include("com/**/Login*") // will only include classes starting with `com.` containing `Login` on its name
+    exclude("**/*ToBeExcluded*") // will exclude classes with its name ending in `ToBeExcluded`
+  }
 }
 ```
 
 It's important to realize the filtering is done at `.class` file level (compiled classes).
 You should not use classes names here but GLOB patterns.
 
-# Demo project for aggregating Jacoco Android & JVM coverage reports
-
-This is an example project that illustrates how can the
-[JaCoCo Report Aggregation Plugin](https://docs.gradle.org/current/userguide/jacoco_report_aggregation_plugin.html)
-and
-[Test Report Aggregation Plugin](https://docs.gradle.org/current/userguide/test_report_aggregation_plugin.html)
-can be used to aggregate a complex Android project with JVM modules in a single
-`:jacocoAggregatedReport` and `:testAggregatedReport` tasks.
-
-## Project structure
-
-- A `plugin` included build that provides the `coverage` root plugin
-- A `demo-project` with:
-    - An `app` android module (with Robolectric tests)
-    - A `login` android library module (with JUnit4/JVM tests)
-    - A `domain` jvm module (with tests)
-
-## The `test-aggregation` root plugin
-
-The plugin fills the gaps between [AGP](https://developer.android.com/studio/releases/gradle-plugin)
-and
-[JaCoCo Report Aggregation Plugin](https://docs.gradle.org/current/userguide/jacoco_report_aggregation_plugin.html)
-by providing the necessary setup missing:
-
-- It applies `jacoco-report-aggregation` and `test-report-aggregation` at root project
-- Creates `jacocoAggregatedReport` and `testAggregatedReport` for `TestSuiteType.UNIT_TEST`
-- If a module applies `jacoco` plugin, it adds it to the `jacocoAggregation` and
-  `testReportAggregation` root configurations
-- If a module applies the `java` plugin, makes its child `jacocoAggregatedReport` task to depend on
-  `test`
-- If a module applies the `android` plugin:
-    - it enables by default `BuildType.enableUnitTestCoverage` on `debug` to produce jacoco exec
-      files
-    - adds the `codeCoverageExecutionData`, `codeCoverageSources`, `codeCoverageElements` (classes)
-      and `testResultsElements`
-      outgoing variants, to allow `jacoco-report-aggregation` and `test-report-aggregation` to
-      aggregate it
-
-Please note that JVM still need to manually apply `jacoco` plugin (this is an intentional opt-in
-behavior)
-[build.gradle.kts](build.gradle.kts#L3)
-
 ## Producing an aggregated report for the whole project
 
-The task `:jacocoAggregatedReport` is added to the root project when applying this plugin and it can
-be
-run to produce the report. All dependent `test` tasks will be run too to produce the required
-execution data.
-![Aggregated JaCoCo Report example](README-aggregated-jacoco-report.png)
-
-The same for `:testAggregatedReport`:
-![Aggregated Test Report example](README-aggregated-test-report.png)
-
-## Enforcing aggregated code coverage metrics
-
-The same as `JaCoCo Plugin`
-supports [Enforcing code coverage metrics](https://docs.gradle.org/current/userguide/jacoco_plugin.html#ex-configuring-violation-rules)
-this plugin adds a ':jacocoAggregatedCoverageVerification' to provide the same feature, but with the
-aggregated metrics:
+This following a is a basic and quick configuration for generating an aggregated report for
+all modules of the build, at the root project add:
 
 ```kotlin
-tasks.jacocoAggregatedCoverageVerification {
-    violationRules {
-        rule {
-            limit {
-                minimum = "0.5".toBigDecimal()
-            }
-        }
+plugins {
+    id("io.github.gmazzo.test.aggregation")
+}
 
-        rule {
-            isEnabled = false
-            element = "CLASS"
-            includes = listOf("org.gradle.*")
+dependencies {
+  allprojects {
+    aggregateTestsFrom(project)
+  }
+}
+```
+Then run:
+```shell
+./gradlew aggregateTestsFrom
+```
 
-            limit {
-                counter = "LINE"
-                value = "TOTALCOUNT"
-                maximum = "0.3".toBigDecimal()
-            }
-        }
-    }
+## Choosing which variants of each module are aggregated
+
+By default, any detected variant (JVM test suites, Android Variant or Kotlin Target) will be aggregated.
+
+However, you can filter which variants are aggregated by using the `aggregateTests` API:
+
+For Java:
+```kotlin
+testing.suites.create<JvmTestSuite>("integrationTest") {
+    aggregateTests = false // this suite will not be aggregated
 }
 ```
 
-## The `aggregateTestCoverage` DSL extension
-
-This is an opt-in/out switch meant to be used when having `productFlavors`.
-
-`enableUnitTestCoverage` is a `BuildType` setting (default on `debug`). When having flavors, you'll
-have many coverage reports to produce targeting `debug` (one per flavor variant).
-You can use `enableUnitTestCoverage.set(false)` to turn aggregation off for an specific
-`ProductFlavor`.
-Basically, the variant won't be added to the `codeCoverageExecutionData` configuration, so
-`:jacocoAggregatedReport` won't compute it
-
-For instance, `app` module has a `environment` dimension with 2 flavors: `stage` and `prod`.
-Without any extra settings, `:jacocoAggregatedReport` will depend on `:app:testStageDebugUnitTest`
-and
-`:app:testProdDebugUnitTest` (running its `src/test/` tests effectively twice).
-You may choose which flavors participates in the aggregated report by doing:
-
+For Android:
 ```kotlin
-    productFlavors {
-    create("stage") {
-        dimension = "environment"
-    }
-    create("prod") {
-        dimension = "environment"
-        aggregateTestCoverage.set(false)
-    }
+androidComponents{
+  onVariants { variant ->
+    variant.aggregateTests = false
+  }
 }
 ```
 
-where it effectively only run `:app:testStageDebugUnitTest`
-
-> [!NOTE]
-> The `aggregateTestCoverage` DSL applies for both `:jacocoAggregatedReport` and
-`:testAggregatedReport` tasks
+For Kotlin Multiplatform:
+```kotlin
+kotlin {
+    android {
+      aggregateTests = false
+    }
+    jvm()
+    js {
+      aggregateTests = false
+    }
+}
+```

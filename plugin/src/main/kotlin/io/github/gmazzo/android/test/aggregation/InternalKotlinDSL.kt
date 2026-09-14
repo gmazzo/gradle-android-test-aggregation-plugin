@@ -7,5 +7,6 @@ import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.kotlin.dsl.named
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 
+@Deprecated(OLD_API_DEPRECATION_MESSAGE)
 internal fun Project.unitTestTaskOf(target: KotlinTarget) =
     tasks.named<AbstractTestTask>("${(target.disambiguationClassifier ?: target.name)}Test")

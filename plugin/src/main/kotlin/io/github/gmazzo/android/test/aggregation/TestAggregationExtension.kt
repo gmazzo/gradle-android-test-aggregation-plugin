@@ -7,6 +7,7 @@ import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Nested
 import org.gradle.kotlin.dsl.invoke
 
+@Deprecated(OLD_API_DEPRECATION_MESSAGE)
 public abstract class TestAggregationExtension {
 
     @get:Nested
