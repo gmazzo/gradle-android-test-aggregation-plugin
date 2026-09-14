@@ -72,9 +72,6 @@ internal object AndroidSupport {
         testResults: TestAggregationResultsReport,
         testCoverage: TestAggregationCoverageReport,
     ) {
-        val androidComponents =
-            extensions.getByName<AndroidComponentsExtension<*, *, *>>("androidComponents")
-
         androidComponents.onVariants { variant ->
             val buildType = resolveBuildType(variant)
             val variantAggregate = variant.gradleExtensions.aggregateTests(objects)
@@ -135,12 +132,26 @@ internal object AndroidSupport {
         return (android as CommonExtension).buildTypes[buildType]
     }
 
-    private fun Project.testTaskOf(component: TestComponent, configure: Action<Task>) =
+    private fun Project.testTasksOf(component: TestComponent, configure: Action<Task>) =
         when (component) {
-            is HostTest -> project.lazyTask("test${component.name.capitalized}", configure)
-            is DeviceTest -> project.lazyTask("connected${component.name.capitalized}", configure)
-            else -> error("Failed to infer test task for $component")
+            is HostTest -> project
+                .tasksMatching(
+                    regex = "(test|validate)${Regex.escape(component.name.capitalized)}".toRegex(),
+                    configure
+                )
+
+            // TODO add managed devices support
+            is DeviceTest -> project
+                .tasksMatching(name = "connected${component.name.capitalized}", configure)
+
+            else -> provider { emptyList() }
         }
+
+    private val Project.android
+        get() = extensions.getByName<CommonExtension>("android")
+
+    private val Project.androidComponents
+        get() = extensions.getByName<AndroidComponentsExtension<*, *, *>>("androidComponents")
 
     private val TestComponent.shouldAggregateByDefault
         get() = this is HostTest
@@ -161,18 +172,20 @@ internal object AndroidSupport {
             }
 
             for (testComponent in testsComponents) {
-                val testTask = project.testTaskOf(testComponent) task@{
+                val testTask = project.testTasksOf(testComponent) task@{
                     this@task.aggregateTests = testComponent.aggregateTests
                 }
 
                 val variant = report.variants.maybeCreate(testComponent.name)
                 variant.dependsOn(testTask)
                 variant.aggregate.convention(testComponent.aggregateTests)
-                variant.binaryData.from(testTask.map {
-                    when (it) {
-                        is AbstractTestTask -> it.binaryResultsDirectory
-                        is AndroidTestTask -> it.resultsDir
-                        else -> error(it)
+                variant.binaryData.from(testTask.map { list ->
+                    list.mapNotNull {
+                        when (it) {
+                            is AbstractTestTask -> it.binaryResultsDirectory
+                            is AndroidTestTask -> it.resultsDir
+                            else -> null
+                        }
                     }
                 })
             }
@@ -212,20 +225,23 @@ internal object AndroidSupport {
                 if (testComponent !is TestComponent) continue
 
                 val testAggregate = testComponent.aggregateTests
-                val testTask = project.testTaskOf(testComponent) task@{
+                val testTask = project.testTasksOf(testComponent) task@{
                     this@task.aggregateTests = testAggregate
                 }
 
                 variant.dependsOn(testAggregate.map { if (it) testTask else emptyArray<Any>() })
-                variant.coverageData.from(testAggregate.zip(testTask) { agg, task ->
-                    when (val task = task.takeIf { agg }) {
-                        is AndroidUnitTest -> task.jacocoCoverageOutputFile
-                        is DeviceProviderInstrumentTestTask -> task.coverageDirectory
-                        is ManagedDeviceTestTask -> task.getCoverageDirectory()
-                        is ManagedDeviceInstrumentationTestTask -> task.getCoverageDirectory()
-                        is AbstractTestTask -> task.coverageFile
-                        else -> null
-                    } ?: emptyArray<Any>()
+                variant.coverageData.from(testAggregate.zip(testTask) { agg, list ->
+                    if (agg) list.mapNotNull { task ->
+                        when (task) {
+                            is AndroidUnitTest -> task.jacocoCoverageOutputFile
+                            is DeviceProviderInstrumentTestTask -> task.coverageDirectory
+                            is ManagedDeviceTestTask -> task.getCoverageDirectory()
+                            is ManagedDeviceInstrumentationTestTask -> task.getCoverageDirectory()
+                            is AbstractTestTask -> task.coverageFile
+                            else -> null
+                        }
+                    }
+                    else emptyArray<Any>()
                 })
             }
         }
