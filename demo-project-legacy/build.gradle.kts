@@ -16,10 +16,10 @@ plugins {
 testAggregation {
     modules {
         include(
-            projects.demoProject.app,
-            projects.demoProject.domain,
-            projects.demoProject.login,
-            projects.demoProject.kmp,
+            projects.demoProjectLegacy.app,
+            projects.demoProjectLegacy.domain,
+            projects.demoProjectLegacy.login,
+            projects.demoProjectLegacy.kmp,
         )
         exclude(rootProject)
     }
