@@ -17,6 +17,9 @@ The `2.x` version was registering two Gradle tasks as entrypoint: `jacocoAggrega
 
 The `3.0` version registers a single task `aggregatedTestReport`, which depends on `aggregatedTestCoverageReport` and `aggregatedTestResultsReport` ones.
 
+> [!NOTE]
+> On Android, make sure to set `enableUnitTestCoverage = true` and/or `enableAndroidTestCoverage = true` for enable coverage variant to be discovered
+
 ## Filtering modules / choosing what aggregate
 
 **This a major behavior change:**
