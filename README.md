@@ -28,7 +28,7 @@ plugins {
 }
 ```
 
-Then use the `aggregatedTestReport` to generate the reports (at its default locations):
+Then use the `aggregatedTestsReport` to generate the reports (at its default locations):
 - `build/reports/aggregated-test-coverage` for coverage
 - `build/reports/aggregated-test-results` for test results
 

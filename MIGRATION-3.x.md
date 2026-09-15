@@ -15,7 +15,7 @@ Replace all usages of `io.github.gmazzo.test.aggregation.coverage` and
 
 The `2.x` version was registering two Gradle tasks as entrypoint: `jacocoAggregatedReport` and `testAggregatedReport`.
 
-The `3.0` version registers a single task `aggregatedTestReport`, which depends on `aggregatedTestCoverageReport` and `aggregatedTestResultsReport` ones.
+The `3.0` version registers a single task `aggregatedTestsReport`, which depends on `aggregatedTestCoverageReport` and `aggregatedTestResultsReport` ones.
 
 > [!NOTE]
 > On Android, make sure to set `enableUnitTestCoverage = true` and/or `enableAndroidTestCoverage = true` for enable coverage variant to be discovered

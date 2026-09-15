@@ -94,7 +94,7 @@ public class TestAggregationBasePlugin @Inject constructor(
             withType<AbstractTestAggregationReport<*, *>> { configure() }
         }
 
-        tasks.register("aggregatedTestReport") {
+        tasks.register("aggregatedTestsReport") {
             group = LifecycleBasePlugin.VERIFICATION_GROUP
             description = "Aggregates test results and coverage for all test variants"
 
