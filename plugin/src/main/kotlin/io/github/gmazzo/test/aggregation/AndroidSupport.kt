@@ -66,6 +66,17 @@ internal object AndroidSupport {
                     CoverageExtension(project, this@report)
                 )
         }
+
+        androidComponents.onVariants { variant ->
+            val variantAggregate = variant.gradleExtensions.aggregateTests(objects)
+
+            for (testComponent in variant.nestedComponents) {
+                if (testComponent !is TestComponent) continue
+
+                testComponent.gradleExtensions.aggregateTests(objects)
+                    .convention(variantAggregate.map { it && testComponent.shouldAggregateByDefault })
+            }
+        }
     }
 
     fun Project.install(
@@ -74,13 +85,9 @@ internal object AndroidSupport {
     ) {
         androidComponents.onVariants { variant ->
             val buildType = resolveBuildType(variant)
-            val variantAggregate = variant.gradleExtensions.aggregateTests(objects)
 
             for (testComponent in variant.nestedComponents) {
                 if (testComponent !is TestComponent) continue
-
-                testComponent.gradleExtensions.aggregateTests(objects)
-                    .convention(variantAggregate.map { it && testComponent.shouldAggregateByDefault })
 
                 val coverageEnabled = when (testComponent) {
                     is HostTest -> buildType?.enableUnitTestCoverage ?: false
@@ -89,6 +96,7 @@ internal object AndroidSupport {
                 }
                 if (coverageEnabled) {
                     testCoverage.addAndroidVariant(variant)
+                    break
                 }
             }
 
