@@ -40,7 +40,7 @@ The plugin will automatically detect and aggregate:
     - Because API limitations, only the default `test` jvm suite will be automatically computed
     - You can register further jvm suites through the `io.github.gmazzo.test.aggregation.TestAggregationCoverageReport.addTestSuite` API
 - For `com.android.application`, `com.android.library` and `com.android.library.multiplatform` projects:
-  - Any `Variant` which its `BuilType` has `enableUnitTestCoverage = true` configured
+  - Any `Variant` which its `BuilType` has `enableUnitTestCoverage = true` and/or `enableAndroidTestCoverage = true` configured
   - Any `Variant` with either `HostTest` or `DeviceTest` test components
 - For `org.jetbrains.kotlin.multiplatform` projects:
   - Any `KotlinTarget` that with tests. Coverage is only supported for JVM-based ones.
