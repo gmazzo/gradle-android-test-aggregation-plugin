@@ -133,8 +133,16 @@ public class TestAggregationBasePlugin @Inject constructor(
 
             }
 
+            htmlRequired
+                .convention(true)
+                .finalizeValueOnRead()
+
             htmlOutputLocation
                 .convention(baseDirectory.dir(name.defaultResultsDir + "/html"))
+                .finalizeValueOnRead()
+
+            junitXMLRequired
+                .convention(true)
                 .finalizeValueOnRead()
 
             junitXMLOutputLocation
@@ -142,15 +150,17 @@ public class TestAggregationBasePlugin @Inject constructor(
                 .finalizeValueOnRead()
 
             reportTask =
-                tasks.register<AggregatedTestResultsTask>("aggregatedTestResultsReport${name.taskSuffix}") {
+                tasks.register<AggregatedTestResultsTask>("aggregatedTestResultsReport${name.taskSuffix}") task@{
                     group = LifecycleBasePlugin.VERIFICATION_GROUP
                     description = "Aggregates test results for all test variants"
 
                     dependsOn(filteredVariants.map { it.dependsOn })
-                    variants.addAll(this@report.filteredVariants.map { it.isolated })
-                    variants.addAll(this@report.variantsFromDependencies)
-                    htmlOutputLocation.value(this@report.htmlOutputLocation)
-                    junitXMLOutputLocation.value(this@report.junitXMLOutputLocation)
+                    this@task.variants.addAll(this@report.filteredVariants.map { it.isolated })
+                    this@task.variants.addAll(this@report.variantsFromDependencies)
+                    this@task.htmlRequired.value(this@report.htmlRequired)
+                    this@task.htmlOutputLocation.value(this@report.htmlOutputLocation)
+                    this@task.junitXMLRequired.value(this@report.junitXMLRequired)
+                    this@task.junitXMLOutputLocation.value(this@report.junitXMLOutputLocation)
                 }
         }
 
@@ -188,12 +198,24 @@ public class TestAggregationBasePlugin @Inject constructor(
                 }
             }
 
+            htmlRequired
+                .convention(true)
+                .finalizeValueOnRead()
+
             htmlOutputLocation
                 .convention(baseDirectory.dir(name.defaultCoverageDir + "/html"))
                 .finalizeValueOnRead()
 
+            xmlRequired
+                .convention(true)
+                .finalizeValueOnRead()
+
             xmlOutputLocation
                 .convention(baseDirectory.file(name.defaultCoverageDir + "/coverage.xml"))
+                .finalizeValueOnRead()
+
+            csvRequired
+                .convention(true)
                 .finalizeValueOnRead()
 
             csvOutputLocation
@@ -201,17 +223,20 @@ public class TestAggregationBasePlugin @Inject constructor(
                 .finalizeValueOnRead()
 
             reportTask =
-                tasks.register<AggregatedTestCoverageTask>("aggregatedTestCoverageReport${name.taskSuffix}") {
+                tasks.register<AggregatedTestCoverageTask>("aggregatedTestCoverageReport${name.taskSuffix}") task@{
                     group = LifecycleBasePlugin.VERIFICATION_GROUP
                     description = "Aggregates test coverage report for all test variants"
 
                     dependsOn(filteredVariants.map { it.dependsOn })
-                    variants.addAll(this@report.filteredVariants.map { it.isolated })
-                    variants.addAll(this@report.variantsFromDependencies)
-                    jacocoClasspath.from(jacocoAntClasspath)
-                    htmlOutputLocation.value(this@report.htmlOutputLocation)
-                    xmlOutputLocation.value(this@report.xmlOutputLocation)
-                    csvOutputLocation.value(this@report.csvOutputLocation)
+                    this@task.variants.addAll(this@report.filteredVariants.map { it.isolated })
+                    this@task.variants.addAll(this@report.variantsFromDependencies)
+                    this@task.jacocoClasspath.from(jacocoAntClasspath)
+                    this@task.htmlRequired.value(this@report.htmlRequired)
+                    this@task.htmlOutputLocation.value(this@report.htmlOutputLocation)
+                    this@task.xmlRequired.value(this@report.xmlRequired)
+                    this@task.xmlOutputLocation.value(this@report.xmlOutputLocation)
+                    this@task.csvRequired.value(this@report.csvRequired)
+                    this@task.csvOutputLocation.value(this@report.csvOutputLocation)
                 }
         }
 
