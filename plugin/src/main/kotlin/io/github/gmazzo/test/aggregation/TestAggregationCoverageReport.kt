@@ -7,6 +7,7 @@ import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.plugins.jvm.JvmTestSuite
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.SourceSet
@@ -24,9 +25,15 @@ public interface TestAggregationCoverageReport :
         configure.execute(content)
     }
 
+    public val htmlRequired: Property<Boolean>
+
     public val htmlOutputLocation: DirectoryProperty
 
+    public val xmlRequired: Property<Boolean>
+
     public val xmlOutputLocation: RegularFileProperty
+
+    public val csvRequired: Property<Boolean>
 
     public val csvOutputLocation: RegularFileProperty
 

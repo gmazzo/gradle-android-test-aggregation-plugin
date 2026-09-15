@@ -5,6 +5,7 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.plugins.jvm.JvmTestSuite
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.TaskProvider
 
 public interface TestAggregationResultsReport :
@@ -12,7 +13,11 @@ public interface TestAggregationResultsReport :
 
     public override val variants: NamedDomainObjectContainer<Variant>
 
+    public val htmlRequired: Property<Boolean>
+
     public val htmlOutputLocation: DirectoryProperty
+
+    public val junitXMLRequired: Property<Boolean>
 
     public val junitXMLOutputLocation: DirectoryProperty
 

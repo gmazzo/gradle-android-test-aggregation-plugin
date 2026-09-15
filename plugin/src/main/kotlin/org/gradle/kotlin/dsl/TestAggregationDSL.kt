@@ -2,12 +2,7 @@ package org.gradle.kotlin.dsl
 
 import io.github.gmazzo.android.test.aggregation.OLD_API_DEPRECATION_MESSAGE
 import io.github.gmazzo.android.test.aggregation.UsageTestAggregationCompatibilityRule
-import io.github.gmazzo.test.aggregation.TestAggregationBasePlugin.Companion.DEFAULT_COVERAGE_NAME
-import io.github.gmazzo.test.aggregation.TestAggregationBasePlugin.Companion.DEFAULT_RESULTS_NAME
-import io.github.gmazzo.test.aggregation.TestAggregationCoverageReport
-import io.github.gmazzo.test.aggregation.TestAggregationResultsReport
 import io.github.gmazzo.test.aggregation.aggregateTests
-import org.gradle.api.Project
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.attributes.Usage.USAGE_ATTRIBUTE
@@ -15,7 +10,6 @@ import org.gradle.api.internal.artifacts.dependencies.AbstractModuleDependency
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.plugins.jvm.JvmTestSuite
 import org.gradle.api.provider.Property
-import org.gradle.api.reporting.ReportingExtension
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.testing.AbstractTestTask
 
@@ -34,14 +28,6 @@ public fun DependencyHandler.testAggregation(dependency: Any): ProjectDependency
             )
         }
     }
-
-public val Project.aggregatedTestResults: TestAggregationResultsReport
-    get() = the<ReportingExtension>().reports
-        .getByName(DEFAULT_RESULTS_NAME, TestAggregationResultsReport::class)
-
-public val Project.aggregatedTestCoverage: TestAggregationCoverageReport
-    get() = the<ReportingExtension>().reports
-        .getByName(DEFAULT_COVERAGE_NAME, TestAggregationCoverageReport::class)
 
 public val SourceSet.aggregateTests: Property<Boolean>
     get() = (this as ExtensionAware).aggregateTests

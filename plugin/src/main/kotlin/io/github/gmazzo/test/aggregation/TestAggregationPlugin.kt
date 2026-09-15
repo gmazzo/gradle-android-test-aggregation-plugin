@@ -12,6 +12,7 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.typeOf
 import org.gradle.kotlin.dsl.withType
 import org.gradle.testing.base.TestingExtension
 
@@ -22,12 +23,18 @@ public class TestAggregationPlugin : Plugin<Project> {
 
         val reporting = the<ReportingExtension>()
         val aggregateConfig = configurations.dependencyScope("aggregateTestsFrom")
-        val testResults = reporting.reports.create<TestAggregationResultsReport>(DEFAULT_RESULTS_NAME) {
-            aggregateFrom.configure { extendsFrom(aggregateConfig.get()) }
-        }
-        val testCoverage = reporting.reports.create<TestAggregationCoverageReport>(DEFAULT_COVERAGE_NAME) {
-            aggregateFrom.configure { extendsFrom(aggregateConfig.get()) }
-        }
+
+        val testResults = reporting
+            .reports.create<TestAggregationResultsReport>(DEFAULT_RESULTS_NAME) {
+                aggregateFrom.configure { extendsFrom(aggregateConfig.get()) }
+            }
+            .also { extensions.add(typeOf<TestAggregationResultsReport>(), it.name, it) }
+
+        val testCoverage = reporting
+            .reports.create<TestAggregationCoverageReport>(DEFAULT_COVERAGE_NAME) {
+                aggregateFrom.configure { extendsFrom(aggregateConfig.get()) }
+            }
+            .also { extensions.add(typeOf<TestAggregationCoverageReport>(), it.name, it) }
 
         plugins.withId("jvm-test-suite") {
             val suites = the<TestingExtension>().suites
@@ -48,7 +55,10 @@ public class TestAggregationPlugin : Plugin<Project> {
             with(KMPSupport) { install(testResults, testCoverage) }
         }
 
-        for (androidPluginId in listOf("com.android.base", "com.android.kotlin.multiplatform.library")) {
+        for (androidPluginId in listOf(
+            "com.android.base",
+            "com.android.kotlin.multiplatform.library"
+        )) {
             plugins.withId(androidPluginId) {
                 with(AndroidSupport) { install(testResults, testCoverage) }
             }

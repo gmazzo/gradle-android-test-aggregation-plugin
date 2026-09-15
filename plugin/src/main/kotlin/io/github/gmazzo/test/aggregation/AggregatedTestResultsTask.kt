@@ -12,8 +12,10 @@ import org.gradle.api.internal.tasks.testing.junit.result.JUnitXmlResultOptions
 import org.gradle.api.internal.tasks.testing.report.generic.GenericHtmlTestReportGenerator
 import org.gradle.api.internal.tasks.testing.report.generic.JunitXmlTestReportGenerator
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.CacheableTask
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
@@ -39,9 +41,17 @@ public abstract class AggregatedTestResultsTask : DefaultTask() {
     internal val variantsBinaryData =
         variants.map { v -> v.map { it.binaryData.asFileTree } }
 
+    @get:Input
+    @get:Optional
+    public abstract val htmlRequired: Property<Boolean>
+
     @get:OutputDirectory
     @get:Optional
     public abstract val htmlOutputLocation: DirectoryProperty
+
+    @get:Input
+    @get:Optional
+    public abstract val junitXMLRequired: Property<Boolean>
 
     @get:OutputDirectory
     @get:Optional
@@ -51,6 +61,7 @@ public abstract class AggregatedTestResultsTask : DefaultTask() {
     internal fun generateHTMLReport() {
         val outputDir = htmlOutputLocation.asFile.orNull?.toPath() ?: return
         outputDir.deleteRecursively()
+        if (!htmlRequired.getOrElse(true)) return
 
         val generator = objects.newInstance<GenericHtmlTestReportGenerator>(outputDir)
         generator.generate(variants.get().flatMap { it.binaryDataDirs })
@@ -60,6 +71,7 @@ public abstract class AggregatedTestResultsTask : DefaultTask() {
     internal fun generateXMLReport() {
         val outputDir = junitXMLOutputLocation.asFile.orNull?.toPath() ?: return
         outputDir.deleteRecursively()
+        if (!junitXMLRequired.getOrElse(true)) return
 
         val options = JUnitXmlResultOptions(true, true, true, true)
 

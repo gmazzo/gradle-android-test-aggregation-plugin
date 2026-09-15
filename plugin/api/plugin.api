@@ -43,18 +43,23 @@ public final class io/github/gmazzo/android/test/aggregation/TestResultsAggregat
 public abstract class io/github/gmazzo/test/aggregation/AggregatedTestCoverageTask : org/gradle/api/DefaultTask {
 	public fun <init> ()V
 	public abstract fun getCsvOutputLocation ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getCsvRequired ()Lorg/gradle/api/provider/Property;
 	public abstract fun getHtmlOutputLocation ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getHtmlRequired ()Lorg/gradle/api/provider/Property;
 	public abstract fun getJacocoClasspath ()Lorg/gradle/api/file/ConfigurableFileCollection;
 	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
 	public abstract fun getVariants ()Lorg/gradle/api/provider/SetProperty;
 	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
 	public abstract fun getXmlOutputLocation ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getXmlRequired ()Lorg/gradle/api/provider/Property;
 }
 
 public abstract class io/github/gmazzo/test/aggregation/AggregatedTestResultsTask : org/gradle/api/DefaultTask {
 	public fun <init> ()V
 	public abstract fun getHtmlOutputLocation ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getHtmlRequired ()Lorg/gradle/api/provider/Property;
 	public abstract fun getJunitXMLOutputLocation ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getJunitXMLRequired ()Lorg/gradle/api/provider/Property;
 	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
 	public abstract fun getVariants ()Lorg/gradle/api/provider/SetProperty;
 }
@@ -81,10 +86,13 @@ public abstract interface class io/github/gmazzo/test/aggregation/TestAggregatio
 	public fun content (Lorg/gradle/api/Action;)V
 	public abstract fun getContent ()Lio/github/gmazzo/test/aggregation/TestAggregationCoverageReport$Content;
 	public abstract fun getCsvOutputLocation ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getCsvRequired ()Lorg/gradle/api/provider/Property;
 	public abstract fun getHtmlOutputLocation ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getHtmlRequired ()Lorg/gradle/api/provider/Property;
 	public abstract fun getReportTask ()Lorg/gradle/api/tasks/TaskProvider;
 	public abstract fun getVariants ()Lorg/gradle/api/NamedDomainObjectContainer;
 	public abstract fun getXmlOutputLocation ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getXmlRequired ()Lorg/gradle/api/provider/Property;
 }
 
 public abstract interface class io/github/gmazzo/test/aggregation/TestAggregationCoverageReport$Content {
@@ -156,7 +164,9 @@ public final class io/github/gmazzo/test/aggregation/TestAggregationReportKotlin
 public abstract interface class io/github/gmazzo/test/aggregation/TestAggregationResultsReport : io/github/gmazzo/test/aggregation/TestAggregationReport {
 	public abstract fun addTestSuite (Lorg/gradle/api/plugins/jvm/JvmTestSuite;)Lio/github/gmazzo/test/aggregation/TestAggregationResultsReport$Variant;
 	public abstract fun getHtmlOutputLocation ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getHtmlRequired ()Lorg/gradle/api/provider/Property;
 	public abstract fun getJunitXMLOutputLocation ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getJunitXMLRequired ()Lorg/gradle/api/provider/Property;
 	public abstract fun getReportTask ()Lorg/gradle/api/tasks/TaskProvider;
 	public abstract fun getVariants ()Lorg/gradle/api/NamedDomainObjectContainer;
 }
@@ -191,8 +201,6 @@ public final class org/gradle/kotlin/dsl/TestAggregationDSLKt {
 	public static final fun getAggregateTests (Lorg/gradle/api/plugins/jvm/JvmTestSuite;)Lorg/gradle/api/provider/Property;
 	public static final fun getAggregateTests (Lorg/gradle/api/tasks/SourceSet;)Lorg/gradle/api/provider/Property;
 	public static final fun getAggregateTests (Lorg/gradle/api/tasks/testing/AbstractTestTask;)Lorg/gradle/api/provider/Property;
-	public static final fun getAggregatedTestCoverage (Lorg/gradle/api/Project;)Lio/github/gmazzo/test/aggregation/TestAggregationCoverageReport;
-	public static final fun getAggregatedTestResults (Lorg/gradle/api/Project;)Lio/github/gmazzo/test/aggregation/TestAggregationResultsReport;
 	public static final fun testAggregation (Lorg/gradle/api/artifacts/dsl/DependencyHandler;Ljava/lang/Object;)Lorg/gradle/api/artifacts/ProjectDependency;
 }
 
